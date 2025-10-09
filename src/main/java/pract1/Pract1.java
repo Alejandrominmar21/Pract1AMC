@@ -20,7 +20,7 @@ public class Pract1 {
         ArrayList<Punto> dataset = new ArrayList<>();
         dataset.add(new Punto(0,0));
         dataset.add(new Punto(2,3));
-        dataset.add(new Punto(3,3));
+        dataset.add(new Punto(3,4));
         dataset.add(new Punto(5,5));
         
         Algoritmos alg = new Algoritmos();
