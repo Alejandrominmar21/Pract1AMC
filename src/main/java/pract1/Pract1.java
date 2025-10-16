@@ -19,7 +19,7 @@ public class Pract1 {
         
         ArrayList<Punto> dataset = new ArrayList<>();
         dataset.add(new Punto(0,0));
-        dataset.add(new Punto(2,3));
+        dataset.add(new Punto(3,3));
         dataset.add(new Punto(4,4));
         dataset.add(new Punto(5,5));
         
