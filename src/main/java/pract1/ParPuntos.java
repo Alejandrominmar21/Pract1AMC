@@ -25,7 +25,9 @@ public class ParPuntos {
         this.p2 = p2;
     }
 
+    public Punto getP1() {return p1;}
   
+    public Punto getP2() {return p2;}
 
   
     @Override
