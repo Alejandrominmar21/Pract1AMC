@@ -5,6 +5,7 @@
 package pract1;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 
 /**
@@ -37,7 +38,7 @@ public class Algoritmos {
           
             }
         }
-        System.out.println("min: " + distanciaMinima + "Puntos: " + puntosDistMin);
+        //System.out.println("min: " + distanciaMinima + "Puntos: " + puntosDistMin);
 
         return puntosDistMin;
 
@@ -76,7 +77,7 @@ public class Algoritmos {
           
       }
     
-      /* ESTO ESTÁ COPIADO TAL CUAL DE CLASE
+      
     public static ParPuntos DyV(ArrayList<Punto> puntos){
         if(puntos == null || puntos.size() < 2) return null;
 
@@ -95,8 +96,7 @@ public class Algoritmos {
         }
 
         int mid = n/2;
-        //List<Punto> izq = new ArrayList<>(ordenadosX.subList(0, mid));
-        //List<Punto> der = new ArrayList<>(ordenadosX.subList(mid, n));
+
         ArrayList<Punto> izq = new ArrayList<>(ordenadosX.subList(0, mid));
         ArrayList<Punto> der = new ArrayList<>(ordenadosX.subList(mid, n));
         double xm = der.get(0).getX();
@@ -107,7 +107,13 @@ public class Algoritmos {
         Double dIzq = distancia(solIzq.getP1(), solIzq.getP2());
         double dDer = distancia(solDer.getP1(), solDer.getP2());
         double d = Math.min(dIzq,dDer); 
-        ParPuntos mejor = (dIzq <= dDer) ? solIzq : solDer;
+        
+        ParPuntos mejor; 
+        if(dIzq <= dDer){
+            mejor = solIzq;
+        }else{
+            mejor = solDer;
+        }  
 
         ArrayList<Punto> bandaIzq = new ArrayList<>();
         for(Punto p : izq) if(Math.abs(p.getX()-xm)<d) bandaIzq.add(p); 
@@ -127,5 +133,5 @@ public class Algoritmos {
             
         return  mejor;
     }
-       */
+       
 }
