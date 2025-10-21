@@ -13,6 +13,9 @@ import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
 /**
@@ -65,19 +68,32 @@ public class Pract1 extends Application {
         File myObj = new File("berlin52.tsp");
         
         Lector prueba = new Lector (myObj);
-        ArrayList<Punto> puntosprueba =prueba.LeePuntos();
+        ArrayList<Punto> puntosDataset =prueba.LeePuntos();
 
         NumberAxis xAxis = new NumberAxis();
         NumberAxis yAxis = new NumberAxis();
         ScatterChart<Number, Number> chart = new ScatterChart<>(xAxis, yAxis);
 
         XYChart.Series<Number, Number> puntos = new XYChart.Series<>();
-        for(Punto punto: puntosprueba ){
+        for(Punto punto: puntosDataset ){
             puntos.getData().add(new XYChart.Data<>(punto.getX(), punto.getY()));
         }
         chart.getData().add(puntos);
 
-        stage.setScene(new Scene(chart, 600, 400));
+        ParPuntos Solucion= Algoritmos.Exhaustivo(puntosDataset);
+        Punto p1 = Solucion.getP1();
+        Punto p2 = Solucion.getP2();
+
+        Pane overlay = new Pane();// Pane para dibujar la línea encima
+        overlay.setPickOnBounds(false);// para que el chart siga recibiendo eventos
+
+        Line linea = new Line(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+        linea.setStrokeWidth(2);
+        linea.setStroke(javafx.scene.paint.Color.RED);
+        overlay.getChildren().add(linea);
+
+        StackPane root = new StackPane(chart, overlay);
+        stage.setScene(new Scene(root, 600, 400));
         stage.show();
     }
     
