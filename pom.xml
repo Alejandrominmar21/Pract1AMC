@@ -1,12 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>pract1</groupId>
     <artifactId>Pract1</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>21</maven.compiler.release>
+        <javafx.version>21.0.2</javafx.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <exec.mainClass>pract1.Pract1</exec.mainClass>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.11.0</version>
+            <configuration>
+                <source>21</source>
+                <target>21</target>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.1.0</version>
+            <configuration>
+                <mainClass>pract1.Pract1</mainClass>
+                <commandlineArgs></commandlineArgs>
+                <includeProjectDependencies>true</includeProjectDependencies>
+                <classpathScope>compile</classpathScope>
+                <arguments>
+                    <argument>--module-path</argument>
+                    <argument>${java.home}/lib</argument> <!-- reemplaza con ruta a JavaFX/lib si es necesario -->
+                    <argument>--add-modules</argument>
+                    <argument>javafx.controls,javafx.fxml</argument>
+                </arguments>
+            </configuration>
+        </plugin>
+        <plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>exec-maven-plugin</artifactId>
+    <version>3.1.0</version>
+    <configuration>
+        <mainClass>pract1.Pract1</mainClass>
+        <arguments>
+            <argument>--module-path</argument>
+            <argument>${path.to.javafx}/lib</argument>
+            <argument>--add-modules</argument>
+            <argument>javafx.controls,javafx.fxml</argument>
+        </arguments>
+    </configuration>
+</plugin>
+
+    </plugins>
+
+    </build>
 </project>
