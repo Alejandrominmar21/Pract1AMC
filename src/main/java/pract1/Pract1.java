@@ -70,7 +70,13 @@ public class Pract1 extends Application {
 
         Lector prueba = new Lector(myObj);
         ArrayList<Punto> puntosDataset = prueba.LeePuntos();
+        ParPuntos solucion = Algoritmos.DyV(puntosDataset);
+        crearGrafica(puntosDataset, solucion,stage);
 
+        stage.show();
+    }
+
+    public void crearGrafica(ArrayList<Punto> puntosDataset,ParPuntos solucion, Stage stage){
         NumberAxis xAxis = new NumberAxis();
         NumberAxis yAxis = new NumberAxis();
         LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
@@ -82,7 +88,7 @@ public class Pract1 extends Application {
         }
         chart.getData().add(puntos);
         // Serie que será la línea entre los dos puntos más cercanos
-        ParPuntos solucion = Algoritmos.DyV(puntosDataset);
+        
         Punto p1 = solucion.getP1();
         Punto p2 = solucion.getP2();
 
@@ -94,7 +100,7 @@ public class Pract1 extends Application {
 
         Scene scene = new Scene(chart, 600, 400);
         stage.setScene(scene);
-        stage.show();
+        
 
         // Estilo: ocultar la línea de la serie de puntos y colorear la serie de la
         // línea
@@ -107,7 +113,5 @@ public class Pract1 extends Application {
         });
 
     }
-
-    //public void mostrarGrafica(){}
 
 }
