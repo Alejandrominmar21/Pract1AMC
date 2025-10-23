@@ -9,13 +9,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
 /**
@@ -31,70 +29,85 @@ public class Pract1 extends Application {
     public static void main(String[] args) {
         boolean salir = false;
         Scanner keyboard = new Scanner(System.in);
-        while(!salir){
-            System.out.println("Elige el algoritmo a probar:");
-            System.out.println("    1.Exhaustivo");
-            System.out.println("    2.Exhaustivo con poda");
-            System.out.println("    3.Divide y venceras");
-            System.out.println("    4.Divide y venceras con mejora");
-            try {
-                eleccion = keyboard.nextInt();
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        /*
+         * while(!salir){
+         * System.out.println("Elige el algoritmo a probar:");
+         * System.out.println("    1.Exhaustivo");
+         * System.out.println("    2.Exhaustivo con poda");
+         * System.out.println("    3.Divide y venceras");
+         * System.out.println("    4.Divide y venceras con mejora");
+         * try {
+         * eleccion = keyboard.nextInt();
+         * } catch (Exception e) {
+         * // TODO Auto-generated catch block
+         * e.printStackTrace();
+         * }
+         * 
+         * launch();
+         * 
+         * }
+         */
+        launch();
 
-            launch(); 
+        /*
+         * ArrayList<Punto> dataset =
+         * //Algoritmos alg = new Algoritmos();
+         * 
+         * ParPuntos Solucion1 = Algoritmos.Exhaustivo(dataset);
+         * ParPuntos Solucion2 =Algoritmos.ExhaustivoPoda(dataset);
+         * ParPuntos Solucion3 =Algoritmos.DyV(dataset);
+         * 
+         * System.out.println(Solucion1);
+         * System.out.println(Solucion2);
+         * System.out.println(Solucion3);
+         */
 
-        }
-        
-      
-        /* 
-          ArrayList<Punto> dataset = 
-        //Algoritmos alg = new Algoritmos();      
-      
-        ParPuntos Solucion1 = Algoritmos.Exhaustivo(dataset);
-        ParPuntos Solucion2 =Algoritmos.ExhaustivoPoda(dataset);
-        ParPuntos Solucion3 =Algoritmos.DyV(dataset);
-
-        System.out.println(Solucion1);
-        System.out.println(Solucion2);
-        System.out.println(Solucion3);
-   */
-        
     }
-      @Override
+
+    @Override
     public void start(Stage stage) {
         File myObj = new File("berlin52.tsp");
-        
-        Lector prueba = new Lector (myObj);
-        ArrayList<Punto> puntosDataset =prueba.LeePuntos();
+
+        Lector prueba = new Lector(myObj);
+        ArrayList<Punto> puntosDataset = prueba.LeePuntos();
 
         NumberAxis xAxis = new NumberAxis();
         NumberAxis yAxis = new NumberAxis();
-        ScatterChart<Number, Number> chart = new ScatterChart<>(xAxis, yAxis);
+        LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
+        chart.setCreateSymbols(true); // mostrar puntos
 
         XYChart.Series<Number, Number> puntos = new XYChart.Series<>();
-        for(Punto punto: puntosDataset ){
+        for (Punto punto : puntosDataset) {
             puntos.getData().add(new XYChart.Data<>(punto.getX(), punto.getY()));
         }
         chart.getData().add(puntos);
+        // Serie que será la línea entre los dos puntos más cercanos
+        ParPuntos solucion = Algoritmos.DyV(puntosDataset);
+        Punto p1 = solucion.getP1();
+        Punto p2 = solucion.getP2();
 
-        ParPuntos Solucion= Algoritmos.Exhaustivo(puntosDataset);
-        Punto p1 = Solucion.getP1();
-        Punto p2 = Solucion.getP2();
+        System.out.println("SOLUCION: " + p1 + " " + p2);
+        XYChart.Series<Number, Number> linea = new XYChart.Series<>();
+        linea.getData().add(new XYChart.Data<>(p1.getX(), p1.getY()));
+        linea.getData().add(new XYChart.Data<>(p2.getX(), p2.getY()));
+        chart.getData().add(linea);
 
-        Pane overlay = new Pane();// Pane para dibujar la línea encima
-        overlay.setPickOnBounds(false);// para que el chart siga recibiendo eventos
-
-        Line linea = new Line(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-        linea.setStrokeWidth(2);
-        linea.setStroke(javafx.scene.paint.Color.RED);
-        overlay.getChildren().add(linea);
-
-        StackPane root = new StackPane(chart, overlay);
-        stage.setScene(new Scene(root, 600, 400));
+        Scene scene = new Scene(chart, 600, 400);
+        stage.setScene(scene);
         stage.show();
+
+        // Estilo: ocultar la línea de la serie de puntos y colorear la serie de la
+        // línea
+        Platform.runLater(() -> {
+            // primera serie = puntos -> ocultar trazo (solo símbolos)
+            chart.lookupAll(".series0.chart-series-line").forEach(n -> n.setStyle("-fx-stroke: transparent;"));
+            // segunda serie = línea -> hacerla roja y gruesa
+            chart.lookupAll(".series1.chart-series-line")
+                    .forEach(n -> n.setStyle("-fx-stroke: red; -fx-stroke-width: 2;"));
+        });
+
     }
-    
+
+    //public void mostrarGrafica(){}
+
 }

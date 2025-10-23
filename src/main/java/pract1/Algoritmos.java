@@ -12,7 +12,7 @@ import java.util.Comparator;
  *
  * @author usuario
  */
-public class Algoritmos {
+public class Algoritmos {//TODO Crear una clase solución que devuelva los puntos con menor distancia, el tiempo que ha tardado y las distancias que ha calculado
 
     public static double distancia(Punto p1, Punto p2) {
         return Math.sqrt(Math.pow(p2.getX() - p1.getX(), 2) + Math.pow(p2.getY() - p1.getY(), 2));
