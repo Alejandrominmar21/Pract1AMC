@@ -10,10 +10,15 @@ import java.util.Scanner;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -47,6 +52,7 @@ public class Pract1 extends Application {
          * 
          * }
          */
+
         launch();
 
         /*
@@ -70,17 +76,44 @@ public class Pract1 extends Application {
 
         Lector prueba = new Lector(myObj);
         ArrayList<Punto> puntosDataset = prueba.LeePuntos();
-        System.out.println("Exhaustivo "+Algoritmos.Exhaustivo(puntosDataset).toString());
-        System.out.println("Poda "+Algoritmos.ExhaustivoPoda(puntosDataset).toString());
-        System.out.println("DyV "+Algoritmos.DyV(puntosDataset).toString());
-        //ParPuntos solucion = Algoritmos.Exhaustivo(puntosDataset).distMin;
-        
-        //crearGrafica(puntosDataset, solucion,stage);
+        System.out.println("Exhaustivo " + Algoritmos.Exhaustivo(puntosDataset).toString());
+        System.out.println("Poda " + Algoritmos.ExhaustivoPoda(puntosDataset).toString());
+        System.out.println("DyV " + Algoritmos.DyV(puntosDataset).toString());
+      
+        stage.setScene(crearMenu(stage, puntosDataset));
+        stage.setTitle("Análisis de Algoritmos");
 
         stage.show();
     }
 
-    public void crearGrafica(ArrayList<Punto> puntosDataset,ParPuntos solucion, Stage stage){
+    private Scene crearMenu(Stage stage, ArrayList<Punto> puntos) {
+        Button crearTspAleatorio = new Button("Crear un fichero .tsp aleatorio");
+        Button cargarDataSet = new Button("Cargar un dataset en memoria");
+        Button comprobarEstrategias = new Button("Comprobar estrategias");
+        Button estudiarEstrategia = new Button("Estudiar una estrategia");
+        Button btnSalir = new Button("Salir");
+
+        // Acciones al hacer clic
+        crearTspAleatorio.setOnAction(e -> Comparar2());
+        cargarDataSet.setOnAction(e -> Comparar2());
+        comprobarEstrategias.setOnAction(e -> mostrarSoluciones(stage,puntos));
+        estudiarEstrategia.setOnAction(e -> stage.setScene(estudiarEstrategia(stage,puntos)));
+
+
+        btnSalir.setOnAction(e -> stage.close());
+
+        // Organizar botones en un layout vertical
+        VBox menu = new VBox(15, crearTspAleatorio, cargarDataSet, comprobarEstrategias,estudiarEstrategia, btnSalir);
+        menu.setAlignment(Pos.CENTER);
+
+        return new Scene(menu,  1200, 800);
+    }
+
+    public void Comparar2() {
+        System.out.println("TEST ");
+    }
+
+    public void crearGrafica(ArrayList<Punto> puntosDataset, ParPuntos solucion, Stage stage) {
         NumberAxis xAxis = new NumberAxis();
         NumberAxis yAxis = new NumberAxis();
         LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
@@ -92,7 +125,7 @@ public class Pract1 extends Application {
         }
         chart.getData().add(puntos);
         // Serie que será la línea entre los dos puntos más cercanos
-        
+
         Punto p1 = solucion.getP1();
         Punto p2 = solucion.getP2();
 
@@ -102,9 +135,8 @@ public class Pract1 extends Application {
         linea.getData().add(new XYChart.Data<>(p2.getX(), p2.getY()));
         chart.getData().add(linea);
 
-        Scene scene = new Scene(chart, 600, 400);
+        Scene scene = new Scene(chart, 1200, 800);
         stage.setScene(scene);
-        
 
         // Estilo: ocultar la línea de la serie de puntos y colorear la serie de la
         // línea
@@ -116,6 +148,53 @@ public class Pract1 extends Application {
                     .forEach(n -> n.setStyle("-fx-stroke: red; -fx-stroke-width: 2;"));
         });
 
+    }
+
+    private void mostrarSoluciones(Stage stage, ArrayList<Punto> puntos) {//TODO poner esto en condiciones
+        Solucion s1 = Algoritmos.Exhaustivo(puntos);
+        Solucion s2 = Algoritmos.ExhaustivoPoda(puntos);
+        Solucion s3 = Algoritmos.DyV(puntos);
+
+        // Crear etiquetas con los resultados
+        Label titulo = new Label("Resultados de los Algoritmos");
+        titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        Label l1 = new Label(s1.toString());
+        Label l2 = new Label(s2.toString());
+        Label l3 = new Label(s3.toString());
+
+        Button volverBtn = new Button("Volver al menú");
+        volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage,puntos)));
+
+        VBox layout = new VBox(15, titulo, l1, l2, l3, volverBtn);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+
+        Scene scene = new Scene(layout, 1200, 800);
+        stage.setScene(scene);
+    }
+
+     private Scene estudiarEstrategia(Stage stage, ArrayList<Punto> puntos) {
+        Button exhaustivo = new Button("Exhaustivo");
+        Button exhaustivoPoda = new Button("Exhaustivo poda");
+        Button dyv = new Button("Divide y venceras");
+        Button dyv2 = new Button("Divide y venceras ");
+        Button btnSalir = new Button("Salir");
+
+        // Acciones al hacer clic
+        exhaustivo.setOnAction(e -> crearGrafica(puntos, Algoritmos.Exhaustivo(puntos).distMin, stage));
+        exhaustivoPoda.setOnAction(e -> crearGrafica(puntos, Algoritmos.ExhaustivoPoda(puntos).distMin, stage));
+        dyv.setOnAction(e -> crearGrafica(puntos, Algoritmos.DyV(puntos).distMin, stage));
+        dyv2.setOnAction(e -> stage.close());
+
+
+        btnSalir.setOnAction(e -> stage.close());
+
+        // Organizar botones en un layout vertical
+        VBox estrategias = new VBox(15, exhaustivo, exhaustivoPoda, dyv,dyv2, btnSalir);
+        estrategias.setAlignment(Pos.CENTER);
+        
+        return new Scene(estrategias,  1200, 800);
     }
 
 }

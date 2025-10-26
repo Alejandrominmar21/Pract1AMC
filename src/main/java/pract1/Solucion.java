@@ -13,7 +13,7 @@ public class Solucion {
     }
 
     public String toString(){
-        return "Puntos: " + distMin + " timepo: " + tiempo + " iteraciones "+ distCalculadas;
+        return "Puntos: " + distMin + " tiempo: " + tiempo + " iteraciones "+ distCalculadas;
 
     }
 }
