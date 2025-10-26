@@ -28,7 +28,7 @@ public class Lector {
 
                 if (numeros == true) {
                     String[] partes = data.trim().split("\\s+"); // separa por espacios
-                    int id = Integer.parseInt(partes[0]);
+                    //int id = Integer.parseInt(partes[0]);
                     double x = Double.parseDouble(partes[1]);
                     double y = Double.parseDouble(partes[2]);
                     //System.out.println("ID: " + id + ", X: " + x + ", Y: " + y);

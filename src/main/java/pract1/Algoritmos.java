@@ -12,8 +12,7 @@ import java.util.Comparator;
  *
  * @author usuario
  */
-public class Algoritmos {/*TODO Crear una clase solución que devuelva los puntos con menor distancia, el tiempo que ha tardado y las distancias que ha calculado. Y con metodos que sean: 
-                            comprobar estrategias, comparar dos estrategias */
+public class Algoritmos {/*TODO comprobar estrategias, comparar dos estrategias... */
 
                         //TODO crear un fichero tsp aleatorio
 
@@ -26,32 +25,39 @@ public class Algoritmos {/*TODO Crear una clase solución que devuelva los punto
     public Algoritmos() {
     }
 
-    public static ParPuntos Exhaustivo(ArrayList<Punto> puntos) {
+    public static Solucion Exhaustivo(ArrayList<Punto> puntos) {
+        long startTime = System.nanoTime();
         double distanciaMinima= distancia(puntos.get(0),puntos.get(1));
         ParPuntos puntosDistMin = new ParPuntos(puntos.get(0),puntos.get(1));
+        int distCalculadas=0;
         
         for (int i = 0; i < puntos.size(); i++) {
             for (int j = i+1; j < puntos.size(); j++) {
+                distCalculadas++;
                 double dist = distancia(puntos.get(i),puntos.get(j));
                 if(dist < distanciaMinima){
                     distanciaMinima=dist;
                     puntosDistMin =new ParPuntos(puntos.get(i),puntos.get(j));
                 }
-                System.out.println("i: "+puntos.get(i).toString()+" j: "+puntos.get(j).toString()+ " distancia:" + dist );
+                //System.out.println("i: "+puntos.get(i).toString()+" j: "+puntos.get(j).toString()+ " distancia:" + dist );
                 
-                
-          
             }
         }
         //System.out.println("min: " + distanciaMinima + "Puntos: " + puntosDistMin);
+        long endTime = System.nanoTime();
+        long executionTime =  (endTime - startTime) / 1000;
 
-        return puntosDistMin;
+        return new Solucion(puntosDistMin,executionTime,distCalculadas);
 
     }
     
-      public static ParPuntos ExhaustivoPoda(ArrayList<Punto> puntos) {
+      public static Solucion ExhaustivoPoda(ArrayList<Punto> puntos) {
+        long startTime = System.nanoTime();
+        int distCalculadas=0;
         if(puntos.size()<2){
-            return null;
+            long endTime = System.nanoTime();
+            long executionTime =  (endTime - startTime) / 1000;
+            return new Solucion(null,executionTime,0);
         }
         ParPuntos puntosDistMin = new ParPuntos(puntos.get(0),puntos.get(1));
         ArrayList<Punto> aux = new ArrayList<>(puntos);
@@ -62,6 +68,7 @@ public class Algoritmos {/*TODO Crear una clase solución que devuelva los punto
         
         for(int i= 0; i<aux.size()-i;i++){
             for(int j= i+1; j<aux.size();j++){
+                distCalculadas++;
                 double dx  = aux.get(j).getX() - aux.get(i).getX();
                 if(dx >= minDist){//poda por X
                     break;
@@ -77,24 +84,26 @@ public class Algoritmos {/*TODO Crear una clase solución que devuelva los punto
             }   
         }
         
-        
-        return puntosDistMin; 
+        long endTime = System.nanoTime();
+        long executionTime =  (endTime - startTime) / 1000000;
+        return new Solucion(puntosDistMin,executionTime,distCalculadas);
           
       }
     
       
-    public static ParPuntos DyV(ArrayList<Punto> puntos){
-        if(puntos == null || puntos.size() < 2) return null;
+    public static Solucion DyV(ArrayList<Punto> puntos){//TODO ARREGLAR
+        if(puntos == null || puntos.size() < 2) { return new Solucion(null, 0, 0);}
 
         Punto[] arr = puntos.toArray(new Punto[0]);
         Arrays.sort(arr,Comparator.comparingDouble(Punto::getX));
         ArrayList<Punto> ordenadosX = new ArrayList<>(Arrays.asList(arr));
-
-        return dyvRec(ordenadosX);
+        
+        return dyvRec(ordenadosX, 0, 0);
     }
 
-    public static ParPuntos dyvRec(ArrayList<Punto> ordenadosX){
+    public static Solucion dyvRec(ArrayList<Punto> ordenadosX, long Tiempo, int iteraciones){
         int n = ordenadosX.size();
+        int distCalculadas=0;
         
         if(n <= 3){
             return Exhaustivo(new ArrayList<>(ordenadosX));
@@ -106,18 +115,21 @@ public class Algoritmos {/*TODO Crear una clase solución que devuelva los punto
         ArrayList<Punto> der = new ArrayList<>(ordenadosX.subList(mid, n));
         double xm = der.get(0).getX();
 
-        ParPuntos solIzq = dyvRec(izq);
-        ParPuntos solDer = dyvRec(der);
+        
+        long startTime = System.nanoTime();
+        Solucion solIzq = dyvRec(izq,0,0);
+        Solucion solDer = dyvRec(der,0,0);
+        distCalculadas= distCalculadas + solIzq.distCalculadas + solDer.distCalculadas;
 
-        Double dIzq = distancia(solIzq.getP1(), solIzq.getP2());
-        double dDer = distancia(solDer.getP1(), solDer.getP2());
+        Double dIzq = distancia(solIzq.distMin.getP1(), solIzq.distMin.getP2());
+        double dDer = distancia(solDer.distMin.getP1(), solDer.distMin.getP2());
         double d = Math.min(dIzq,dDer); 
         
         ParPuntos mejor; 
         if(dIzq <= dDer){
-            mejor = solIzq;
+            mejor = solIzq.distMin;
         }else{
-            mejor = solDer;
+            mejor = solDer.distMin;
         }  
 
         ArrayList<Punto> bandaIzq = new ArrayList<>();
@@ -128,6 +140,7 @@ public class Algoritmos {/*TODO Crear una clase solución que devuelva los punto
 
         for(Punto li : bandaIzq){
             for(Punto rd : bandaDer){
+                distCalculadas++;
                 double dist =distancia(li, rd);
                 if(dist < d){
                     d=dist;
@@ -135,8 +148,10 @@ public class Algoritmos {/*TODO Crear una clase solución que devuelva los punto
                 }
             }
         }
-            
-        return  mejor;
+        long endTime = System.nanoTime();
+        long executionTime =  (endTime - startTime) / 1000;
+        executionTime= executionTime + solDer.tiempo + solIzq.tiempo;
+        return  new Solucion(mejor, executionTime,distCalculadas);
     }
        
 }

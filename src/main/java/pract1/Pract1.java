@@ -39,7 +39,7 @@ public class Pract1 extends Application {
          * try {
          * eleccion = keyboard.nextInt();
          * } catch (Exception e) {
-         * // TODO Auto-generated catch block
+         *
          * e.printStackTrace();
          * }
          * 
@@ -70,8 +70,12 @@ public class Pract1 extends Application {
 
         Lector prueba = new Lector(myObj);
         ArrayList<Punto> puntosDataset = prueba.LeePuntos();
-        ParPuntos solucion = Algoritmos.DyV(puntosDataset);
-        crearGrafica(puntosDataset, solucion,stage);
+        System.out.println("Exhaustivo "+Algoritmos.Exhaustivo(puntosDataset).toString());
+        System.out.println("Poda "+Algoritmos.ExhaustivoPoda(puntosDataset).toString());
+        System.out.println("DyV "+Algoritmos.DyV(puntosDataset).toString());
+        //ParPuntos solucion = Algoritmos.Exhaustivo(puntosDataset).distMin;
+        
+        //crearGrafica(puntosDataset, solucion,stage);
 
         stage.show();
     }
