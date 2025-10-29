@@ -6,10 +6,13 @@ package pract1;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.List;
+import java.util.Map;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -18,6 +21,8 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -26,15 +31,16 @@ import javafx.stage.Stage;
  * @author usuario
  */
 public class Pract1 extends Application {
-    static int eleccion = 0;
+    // static int eleccion = 0;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        boolean salir = false;
-        Scanner keyboard = new Scanner(System.in);
         /*
+         * boolean salir = false;
+         * Scanner keyboard = new Scanner(System.in);
+         * 
          * while(!salir){
          * System.out.println("Elige el algoritmo a probar:");
          * System.out.println("    1.Exhaustivo");
@@ -71,15 +77,12 @@ public class Pract1 extends Application {
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) {//TODO por ahora solo se carga berlin52.tsp, hace falta cargar archivos desde la interfaz?
         File myObj = new File("berlin52.tsp");
 
         Lector prueba = new Lector(myObj);
         ArrayList<Punto> puntosDataset = prueba.LeePuntos();
-        System.out.println("Exhaustivo " + Algoritmos.Exhaustivo(puntosDataset).toString());
-        System.out.println("Poda " + Algoritmos.ExhaustivoPoda(puntosDataset).toString());
-        System.out.println("DyV " + Algoritmos.DyV(puntosDataset).toString());
-      
+
         stage.setScene(crearMenu(stage, puntosDataset));
         stage.setTitle("Análisis de Algoritmos");
 
@@ -89,24 +92,23 @@ public class Pract1 extends Application {
     private Scene crearMenu(Stage stage, ArrayList<Punto> puntos) {
         Button crearTspAleatorio = new Button("Crear un fichero .tsp aleatorio");
         Button cargarDataSet = new Button("Cargar un dataset en memoria");
-        Button comprobarEstrategias = new Button("Comprobar estrategias");
+        Button comprobarEstrategias = new Button("Comprobar todas las estrategias");
         Button estudiarEstrategia = new Button("Estudiar una estrategia");
         Button btnSalir = new Button("Salir");
 
         // Acciones al hacer clic
         crearTspAleatorio.setOnAction(e -> Comparar2());
         cargarDataSet.setOnAction(e -> Comparar2());
-        comprobarEstrategias.setOnAction(e -> mostrarSoluciones(stage,puntos));
-        estudiarEstrategia.setOnAction(e -> stage.setScene(estudiarEstrategia(stage,puntos)));
-
+        comprobarEstrategias.setOnAction(e -> compararEstrategias(stage, puntos));
+        estudiarEstrategia.setOnAction(e -> stage.setScene(estudiarEstrategia(stage, puntos)));
 
         btnSalir.setOnAction(e -> stage.close());
 
         // Organizar botones en un layout vertical
-        VBox menu = new VBox(15, crearTspAleatorio, cargarDataSet, comprobarEstrategias,estudiarEstrategia, btnSalir);
+        VBox menu = new VBox(15, crearTspAleatorio, cargarDataSet, comprobarEstrategias, estudiarEstrategia, btnSalir);
         menu.setAlignment(Pos.CENTER);
 
-        return new Scene(menu,  1200, 800);
+        return new Scene(menu, 1200, 800);
     }
 
     public void Comparar2() {
@@ -150,7 +152,7 @@ public class Pract1 extends Application {
 
     }
 
-    private void mostrarSoluciones(Stage stage, ArrayList<Punto> puntos) {//TODO poner esto en condiciones
+    private void compararEstrategias(Stage stage, ArrayList<Punto> puntos) {// TODO poner esto en condiciones
         Solucion s1 = Algoritmos.Exhaustivo(puntos);
         Solucion s2 = Algoritmos.ExhaustivoPoda(puntos);
         Solucion s3 = Algoritmos.DyV(puntos);
@@ -159,22 +161,59 @@ public class Pract1 extends Application {
         Label titulo = new Label("Resultados de los Algoritmos");
         titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        Label l1 = new Label(s1.toString());
-        Label l2 = new Label(s2.toString());
-        Label l3 = new Label(s3.toString());
+        List<Map.Entry<String, Solucion>> soluciones = List.of(
+                Map.entry("Exhaustivo", s1),
+                Map.entry("ExhaustivoPoda", s2),
+                Map.entry("DivideVenceras", s3)/*
+                                                * ,
+                                                * Map.entry("DyV Mejorado", s4)
+                                                */);
+
+        TableView<Map.Entry<String, Solucion>> tabla = new TableView<>();
+
+        TableColumn<Map.Entry<String, Solucion>, String> colEstrategia = new TableColumn<>("Estrategia");
+        colEstrategia.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getKey()));
+
+        TableColumn<Map.Entry<String, Solucion>, String> colP1 = new TableColumn<>("Punto 1");
+        colP1.setCellValueFactory(d -> {
+            Punto p1 = d.getValue().getValue().distMin.getP1();
+            return new SimpleStringProperty("(" + p1.getX() + ", " + p1.getY() + ")");
+        });
+
+        TableColumn<Map.Entry<String, Solucion>, String> colP2 = new TableColumn<>("Punto 2");
+        colP2.setCellValueFactory(d -> {
+            Punto p2 = d.getValue().getValue().distMin.getP2();
+            return new SimpleStringProperty("(" + p2.getX() + ", " + p2.getY() + ")");
+        });
+
+        TableColumn<Map.Entry<String, Solucion>, String> colDist = new TableColumn<>("Distancia");
+        colDist.setCellValueFactory(d -> {
+            ParPuntos par = d.getValue().getValue().distMin;
+            double distancia = par.getP1().distancia(par.getP2());
+            return new SimpleStringProperty(String.format("%.8f", distancia));
+        });
+
+        TableColumn<Map.Entry<String, Solucion>, Integer> colCalc = new TableColumn<>("Calculadas");
+        colCalc.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue().getValue().distCalculadas).asObject());
+
+        TableColumn<Map.Entry<String, Solucion>, String> colTiempo = new TableColumn<>("Tiempo (mseg)");
+        colTiempo.setCellValueFactory(d -> new SimpleStringProperty(
+                String.format("%.4f", d.getValue().getValue().tiempo)));
+
+        tabla.getColumns().addAll(colEstrategia, colP1, colP2, colDist, colCalc, colTiempo);
+        tabla.getItems().addAll(soluciones);
 
         Button volverBtn = new Button("Volver al menú");
-        volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage,puntos)));
+        volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage, puntos)));
 
-        VBox layout = new VBox(15, titulo, l1, l2, l3, volverBtn);
+        VBox layout = new VBox(15, new Label("Resultados de los Algoritmos"), tabla, volverBtn);
         layout.setAlignment(Pos.CENTER);
-        layout.setPadding(new Insets(20));
+        layout.setPadding(new Insets(15));
 
-        Scene scene = new Scene(layout, 1200, 800);
-        stage.setScene(scene);
+        stage.setScene(new Scene(layout, 950, 400));
     }
 
-     private Scene estudiarEstrategia(Stage stage, ArrayList<Punto> puntos) {
+    private Scene estudiarEstrategia(Stage stage, ArrayList<Punto> puntos) {
         Button exhaustivo = new Button("Exhaustivo");
         Button exhaustivoPoda = new Button("Exhaustivo poda");
         Button dyv = new Button("Divide y venceras");
@@ -187,14 +226,13 @@ public class Pract1 extends Application {
         dyv.setOnAction(e -> crearGrafica(puntos, Algoritmos.DyV(puntos).distMin, stage));
         dyv2.setOnAction(e -> stage.close());
 
-
         btnSalir.setOnAction(e -> stage.close());
 
         // Organizar botones en un layout vertical
-        VBox estrategias = new VBox(15, exhaustivo, exhaustivoPoda, dyv,dyv2, btnSalir);
+        VBox estrategias = new VBox(15, exhaustivo, exhaustivoPoda, dyv, dyv2, btnSalir);
         estrategias.setAlignment(Pos.CENTER);
-        
-        return new Scene(estrategias,  1200, 800);
+
+        return new Scene(estrategias, 1200, 800);
     }
 
 }

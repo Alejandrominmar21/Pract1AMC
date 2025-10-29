@@ -12,7 +12,7 @@ import java.util.Comparator;
  *
  * @author usuario
  */
-public class Algoritmos {/*TODO comprobar estrategias, comparar dos estrategias... */
+public class Algoritmos {/*TODO comprobar todas las estrategias, comparar dos estrategias... */
 
                         //TODO crear un fichero tsp aleatorio
 
@@ -45,9 +45,9 @@ public class Algoritmos {/*TODO comprobar estrategias, comparar dos estrategias.
         }
         //System.out.println("min: " + distanciaMinima + "Puntos: " + puntosDistMin);
         long endTime = System.nanoTime();
-        long executionTime =  (endTime - startTime) / 1000;
+        long executionTime =  (endTime - startTime);
 
-        return new Solucion(puntosDistMin,executionTime,distCalculadas);
+        return new Solucion(puntosDistMin,((float) executionTime)/1000000,distCalculadas);// tiempo en ms
 
     }
     
@@ -56,7 +56,7 @@ public class Algoritmos {/*TODO comprobar estrategias, comparar dos estrategias.
         int distCalculadas=0;
         if(puntos.size()<2){
             long endTime = System.nanoTime();
-            long executionTime =  (endTime - startTime) / 1000;
+            long executionTime =  (endTime - startTime);
             return new Solucion(null,executionTime,0);
         }
         ParPuntos puntosDistMin = new ParPuntos(puntos.get(0),puntos.get(1));
@@ -85,13 +85,13 @@ public class Algoritmos {/*TODO comprobar estrategias, comparar dos estrategias.
         }
         
         long endTime = System.nanoTime();
-        long executionTime =  (endTime - startTime) / 1000000;
-        return new Solucion(puntosDistMin,executionTime,distCalculadas);
+        long executionTime =  (endTime - startTime);
+        return new Solucion(puntosDistMin,((float) executionTime)/1000000,distCalculadas);
           
       }
     
       
-    public static Solucion DyV(ArrayList<Punto> puntos){//TODO ARREGLAR
+    public static Solucion DyV(ArrayList<Punto> puntos){
         if(puntos == null || puntos.size() < 2) { return new Solucion(null, 0, 0);}
 
         Punto[] arr = puntos.toArray(new Punto[0]);
@@ -149,9 +149,9 @@ public class Algoritmos {/*TODO comprobar estrategias, comparar dos estrategias.
             }
         }
         long endTime = System.nanoTime();
-        long executionTime =  (endTime - startTime) / 1000;
-        executionTime= executionTime + solDer.tiempo + solIzq.tiempo;
-        return  new Solucion(mejor, executionTime,distCalculadas);
+        long executionTime =  (endTime - startTime);
+        executionTime= (long) (executionTime + solDer.tiempo + solIzq.tiempo);
+        return  new Solucion(mejor,((float) executionTime)/1000000,distCalculadas);
     }
        
 }

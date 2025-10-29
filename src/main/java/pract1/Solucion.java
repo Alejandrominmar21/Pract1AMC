@@ -2,18 +2,21 @@ package pract1;
 
 public class Solucion {
     ParPuntos distMin;
-    long tiempo;
+    float tiempo;
     int distCalculadas;
 
 
-    public Solucion(ParPuntos distMin, long tiempo, int distCalculadas){
+    public Solucion(ParPuntos distMin, float tiempo, int distCalculadas){
         this.distMin=distMin;
         this.tiempo=tiempo;
         this.distCalculadas=distCalculadas;
     }
 
+    @Override
     public String toString(){
-        return "Puntos: " + distMin + " tiempo: " + tiempo + " iteraciones "+ distCalculadas;
+
+        String tiempoFormateado = String.format("%.8f", tiempo);
+        return "Puntos: " + distMin + " tiempo: " + tiempoFormateado + " iteraciones " + distCalculadas;
 
     }
 }
