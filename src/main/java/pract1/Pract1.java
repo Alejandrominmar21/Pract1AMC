@@ -97,8 +97,8 @@ public class Pract1 extends Application {
         Button btnSalir = new Button("Salir");
 
         // Acciones al hacer clic
-        crearTspAleatorio.setOnAction(e -> Comparar2());
-        cargarDataSet.setOnAction(e -> Comparar2());
+        crearTspAleatorio.setOnAction(e -> Comparar4());
+        cargarDataSet.setOnAction(e -> Comparar4());
         comprobarEstrategias.setOnAction(e -> compararEstrategias(stage, puntos));
         estudiarEstrategia.setOnAction(e -> stage.setScene(estudiarEstrategia(stage, puntos)));
 
@@ -111,8 +111,29 @@ public class Pract1 extends Application {
         return new Scene(menu, 1200, 800);
     }
 
-    public void Comparar2() {
-        System.out.println("TEST ");
+    public void Comparar4() {
+        int[] Tallas = { 1000, 2000, 3000, 4000, 5000};
+        Solucion[] ResultadosExhaustivo = new Solucion[Tallas.length];
+        Solucion[] ResultadosExhaustivoPoda = new Solucion[Tallas.length];
+        Solucion[] ResultadosDyV = new Solucion[Tallas.length];
+        Solucion[] ResultadosDyVMejorado = new Solucion[Tallas.length]; 
+
+       
+        for (int i = 0; i < Tallas.length; i++) {
+            GeneradorTSP.crearArchivoTSP(Tallas[i],false);
+            File myObj = new File("dataset" + i + ".tsp");
+
+            Lector prueba = new Lector(myObj);
+            ArrayList<Punto> puntosDataset = prueba.LeePuntos();
+
+            ResultadosExhaustivo[i] = Algoritmos.Exhaustivo(puntosDataset);
+            ResultadosExhaustivoPoda[i]  = Algoritmos.ExhaustivoPoda(puntosDataset);
+            ResultadosDyV[i]= Algoritmos.DyV(puntosDataset);
+            ResultadosDyVMejorado[i] = Algoritmos.DyVMejorado(puntosDataset);
+
+            
+        }
+          
     }
 
     public void crearGrafica(ArrayList<Punto> puntosDataset, ParPuntos solucion, Stage stage) {

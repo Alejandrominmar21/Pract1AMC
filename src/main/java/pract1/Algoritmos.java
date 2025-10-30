@@ -12,11 +12,7 @@ import java.util.Comparator;
  *
  * @author usuario
  */
-public class Algoritmos {/*TODO comprobar todas las estrategias, comparar dos estrategias... */
-
-                        //TODO crear un fichero tsp aleatorio
-
-                        //TODO baquero ha dicho que hay que hacer un javadoc, asique hay que comentar el codigo
+public class Algoritmos {//TODO baquero ha dicho que hay que hacer un javadoc, asique hay que comentar el codigo
 
     public static double distancia(Punto p1, Punto p2) {
         return Math.sqrt(Math.pow(p2.getX() - p1.getX(), 2) + Math.pow(p2.getY() - p1.getY(), 2));
