@@ -153,5 +153,58 @@ public class Algoritmos {/*TODO comprobar todas las estrategias, comparar dos es
         executionTime= (long) (executionTime + solDer.tiempo + solIzq.tiempo);
         return  new Solucion(mejor,((float) executionTime)/1000000,distCalculadas);
     }
+
+    public static Solucion dyvRecMejorado(ArrayList<Punto> ordenadosX, long Tiempo, int iteraciones){
+    int n = ordenadosX.size();
+    if(n <= 3){
+        return Exhaustivo(new ArrayList<>(ordenadosX));
+    }
+
+    int mid = n / 2;
+    ArrayList<Punto> izq = new ArrayList<>(ordenadosX.subList(0, mid));
+    ArrayList<Punto> der = new ArrayList<>(ordenadosX.subList(mid, n));
+    double xm = der.get(0).getX();
+
+    long startTime = System.nanoTime();
+    Solucion solIzq = dyvRecMejorado(izq, 0, 0);
+    Solucion solDer = dyvRecMejorado(der, 0, 0);
+
+    int distCalculadas = solIzq.distCalculadas + solDer.distCalculadas;
+    double dIzq = distancia(solIzq.distMin.getP1(), solIzq.distMin.getP2());
+    double dDer = distancia(solDer.distMin.getP1(), solDer.distMin.getP2());
+    double d = Math.min(dIzq, dDer);
+    ParPuntos mejor = dIzq <= dDer ? solIzq.distMin : solDer.distMin;
+
+    // Franja intermedia
+    ArrayList<Punto> franja = new ArrayList<>();
+    for(Punto p : ordenadosX){
+        if(Math.abs(p.getX() - xm) < d){
+            franja.add(p);
+        }
+    }
+
+    // Ordenar por Y
+    franja.sort(Comparator.comparingDouble(Punto::getY));
+
+    // Comparar cada punto con los 11 siguientes
+    for(int i = 0; i < franja.size(); i++){
+        for(int j = i + 1; j < Math.min(i + 12, franja.size()); j++){
+            distCalculadas++;
+            double dist = distancia(franja.get(i), franja.get(j));
+            if(dist < d){
+                d = dist;
+                mejor = new ParPuntos(franja.get(i), franja.get(j));
+            }
+        }
+    }
+
+    long endTime = System.nanoTime();
+    long executionTime = endTime - startTime + (long)(solIzq.tiempo * 1000000) + (long)(solDer.tiempo * 1000000);
+
+
+    return new Solucion(mejor, ((float) executionTime) / 1000000, distCalculadas);
+
+}
+
        
 }
