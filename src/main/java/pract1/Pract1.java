@@ -152,10 +152,11 @@ public class Pract1 extends Application {
 
     }
 
-    private void compararEstrategias(Stage stage, ArrayList<Punto> puntos) {// TODO poner esto en condiciones
+    private void compararEstrategias(Stage stage, ArrayList<Punto> puntos) {// TODO poner s4
         Solucion s1 = Algoritmos.Exhaustivo(puntos);
         Solucion s2 = Algoritmos.ExhaustivoPoda(puntos);
         Solucion s3 = Algoritmos.DyV(puntos);
+        Solucion s4 = Algoritmos.DyVMejorado(puntos);
 
         // Crear etiquetas con los resultados
         Label titulo = new Label("Resultados de los Algoritmos");
@@ -164,10 +165,9 @@ public class Pract1 extends Application {
         List<Map.Entry<String, Solucion>> soluciones = List.of(
                 Map.entry("Exhaustivo", s1),
                 Map.entry("ExhaustivoPoda", s2),
-                Map.entry("DivideVenceras", s3)/*
-                                                * ,
-                                                * Map.entry("DyV Mejorado", s4)
-                                                */);
+                Map.entry("DivideVenceras", s3),
+                                                Map.entry("DyV Mejorado", s4)
+                                               );
 
         TableView<Map.Entry<String, Solucion>> tabla = new TableView<>();
 

@@ -154,6 +154,16 @@ public class Algoritmos {/*TODO comprobar todas las estrategias, comparar dos es
         return  new Solucion(mejor,((float) executionTime)/1000000,distCalculadas);
     }
 
+     public static Solucion DyVMejorado(ArrayList<Punto> puntos){
+        if(puntos == null || puntos.size() < 2) { return new Solucion(null, 0, 0);}
+
+        Punto[] arr = puntos.toArray(new Punto[0]);
+        Arrays.sort(arr,Comparator.comparingDouble(Punto::getX));
+        ArrayList<Punto> ordenadosX = new ArrayList<>(Arrays.asList(arr));
+        
+        return dyvRecMejorado(ordenadosX, 0, 0);
+    }
+
     public static Solucion dyvRecMejorado(ArrayList<Punto> ordenadosX, long Tiempo, int iteraciones){
     int n = ordenadosX.size();
     if(n <= 3){
