@@ -112,8 +112,7 @@ public class Pract1 extends Application {
     }
 
     public void Comparar2() {
-        
-        GeneradorTSP.crearArchivoTSP(567,false);
+        System.out.println("TEST ");
     }
 
     public void crearGrafica(ArrayList<Punto> puntosDataset, ParPuntos solucion, Stage stage) {
