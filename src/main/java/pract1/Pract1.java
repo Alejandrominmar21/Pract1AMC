@@ -6,6 +6,7 @@ package pract1;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -77,7 +78,7 @@ public class Pract1 extends Application {
     }
 
     @Override
-    public void start(Stage stage) {//TODO por ahora solo se carga berlin52.tsp, hace falta cargar archivos desde la interfaz?
+    public void start(Stage stage) {
         File myObj = new File("berlin52.tsp");
 
         Lector prueba = new Lector(myObj);
@@ -90,38 +91,39 @@ public class Pract1 extends Application {
     }
 
     private Scene crearMenu(Stage stage, ArrayList<Punto> puntos) {
-        Button crearTspAleatorio = new Button("Crear un fichero .tsp aleatorio");
-        Button cargarDataSet = new Button("Cargar un dataset en memoria");
-        Button comprobarEstrategias = new Button("Comprobar todas las estrategias");
-        Button estudiarEstrategia = new Button("Estudiar una estrategia");
+        
+        Button comparar4Est = new Button("Comparar todas las estrategias (.tsp aleatorio)");
+        Button cargarDataSet = new Button("");
+        Button comprobarEstrategias = new Button("Comprobar todas las estrategias (dataset cargado)");
+        Button estudiarEstrategia = new Button("Estudiar una estrategia (dataset cargado)");
         Button btnSalir = new Button("Salir");
 
         // Acciones al hacer clic
-        crearTspAleatorio.setOnAction(e -> Comparar4());
-        cargarDataSet.setOnAction(e -> Comparar4());
+        comparar4Est.setOnAction(e -> comparar4(stage));
+        cargarDataSet.setOnAction(e -> comparar4(stage));
         comprobarEstrategias.setOnAction(e -> compararEstrategias(stage, puntos));
         estudiarEstrategia.setOnAction(e -> stage.setScene(estudiarEstrategia(stage, puntos)));
 
         btnSalir.setOnAction(e -> stage.close());
 
         // Organizar botones en un layout vertical
-        VBox menu = new VBox(15, crearTspAleatorio, cargarDataSet, comprobarEstrategias, estudiarEstrategia, btnSalir);
+        VBox menu = new VBox(15, comparar4Est, cargarDataSet, comprobarEstrategias, estudiarEstrategia, btnSalir);
         menu.setAlignment(Pos.CENTER);
 
         return new Scene(menu, 1200, 800);
     }
 
-    public void Comparar4() {
+    public void comparar4(Stage stage) {
         int[] Tallas = { 1000, 2000, 3000, 4000, 5000};
-        Solucion[] ResultadosExhaustivo = new Solucion[Tallas.length];
-        Solucion[] ResultadosExhaustivoPoda = new Solucion[Tallas.length];
-        Solucion[] ResultadosDyV = new Solucion[Tallas.length];
-        Solucion[] ResultadosDyVMejorado = new Solucion[Tallas.length]; 
+        Solucion ResultadosExhaustivo[] = new Solucion[Tallas.length];
+        Solucion ResultadosExhaustivoPoda[]  = new Solucion[Tallas.length];
+        Solucion ResultadosDyV[] = new Solucion[Tallas.length];
+        Solucion ResultadosDyVMejorado[] = new Solucion[Tallas.length]; 
 
        
         for (int i = 0; i < Tallas.length; i++) {
             GeneradorTSP.crearArchivoTSP(Tallas[i],false);
-            File myObj = new File("dataset" + i + ".tsp");
+            File myObj = new File("dataset" + Tallas[i] + ".tsp");
 
             Lector prueba = new Lector(myObj);
             ArrayList<Punto> puntosDataset = prueba.LeePuntos();
@@ -132,8 +134,14 @@ public class Pract1 extends Application {
             ResultadosDyVMejorado[i] = Algoritmos.DyVMejorado(puntosDataset);
 
             
+            System.out.println(ResultadosExhaustivo[i].toString());
+            System.out.println(ResultadosExhaustivoPoda[i].toString());
+            System.out.println(ResultadosDyV[i].toString());
+            System.out.println(ResultadosDyVMejorado[i].toString());
+
+            
         }
-          
+        comparar4Tabla(stage, Tallas, ResultadosExhaustivo, ResultadosExhaustivoPoda, ResultadosDyV, ResultadosDyVMejorado);
     }
 
     public void crearGrafica(ArrayList<Punto> puntosDataset, ParPuntos solucion, Stage stage) {
@@ -152,7 +160,7 @@ public class Pract1 extends Application {
         Punto p1 = solucion.getP1();
         Punto p2 = solucion.getP2();
 
-        System.out.println("SOLUCION: " + p1 + " " + p2);
+        //System.out.println("SOLUCION: " + p1 + " " + p2);
         XYChart.Series<Number, Number> linea = new XYChart.Series<>();
         linea.getData().add(new XYChart.Data<>(p1.getX(), p1.getY()));
         linea.getData().add(new XYChart.Data<>(p2.getX(), p2.getY()));
@@ -173,7 +181,7 @@ public class Pract1 extends Application {
 
     }
 
-    private void compararEstrategias(Stage stage, ArrayList<Punto> puntos) {// TODO poner s4
+    private void compararEstrategias(Stage stage, ArrayList<Punto> puntos) {
         Solucion s1 = Algoritmos.Exhaustivo(puntos);
         Solucion s2 = Algoritmos.ExhaustivoPoda(puntos);
         Solucion s3 = Algoritmos.DyV(puntos);
@@ -255,5 +263,52 @@ public class Pract1 extends Application {
 
         return new Scene(estrategias, 1200, 800);
     }
+
+    private void comparar4Tabla(Stage stage, int[] Tallas, 
+        Solucion[] exhaustivo, Solucion[] poda, Solucion[] dyv, Solucion[] dyvMejorado) {
+
+    Label titulo = new Label("Comparativa de Estrategias");
+    titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+    TableView<Integer> tabla = new TableView<>();
+
+    TableColumn<Integer, Integer> colTalla = new TableColumn<>("Talla");
+    colTalla.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue()).asObject());
+
+    TableColumn<Integer, String> colEx = new TableColumn<>("Exhaustivo (ms)");
+    colEx.setCellValueFactory(d -> new SimpleStringProperty(
+            String.format("%.6f", exhaustivo[indexOf(Tallas, d.getValue())].tiempo)));
+
+    TableColumn<Integer, String> colPoda = new TableColumn<>("ExhaustivoPoda (ms)");
+    colPoda.setCellValueFactory(d -> new SimpleStringProperty(
+            String.format("%.6f", poda[indexOf(Tallas, d.getValue())].tiempo)));
+
+    TableColumn<Integer, String> colDyV = new TableColumn<>("DivideVenceras (ms)");
+    colDyV.setCellValueFactory(d -> new SimpleStringProperty(
+            String.format("%.6f", dyv[indexOf(Tallas, d.getValue())].tiempo)));
+
+    TableColumn<Integer, String> colDyVMej = new TableColumn<>("DyV Mejorado (ms)");
+    colDyVMej.setCellValueFactory(d -> new SimpleStringProperty(
+            String.format("%.6f", dyvMejorado[indexOf(Tallas, d.getValue())].tiempo)));
+
+    tabla.getColumns().addAll(colTalla, colEx, colPoda, colDyV, colDyVMej);
+    tabla.getItems().addAll(Arrays.stream(Tallas).boxed().toList());
+
+    Button volverBtn = new Button("Volver al menú");
+    volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage, null)));
+
+    VBox layout = new VBox(15, titulo, tabla, volverBtn);
+    layout.setAlignment(Pos.CENTER);
+    layout.setPadding(new Insets(15));
+
+    stage.setScene(new Scene(layout, 900, 400));
+}
+
+// Método auxiliar
+private int indexOf(int[] arr, int val) {
+    for (int i = 0; i < arr.length; i++) if (arr[i] == val) return i;
+    return -1;
+}
+
 
 }
