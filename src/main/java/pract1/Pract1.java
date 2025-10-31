@@ -14,13 +14,17 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -79,7 +83,6 @@ public class Pract1 extends Application {
 
     @Override
     public void start(Stage stage) {
-        
 
         stage.setScene(crearMenu(stage));
         stage.setTitle("Análisis de Algoritmos");
@@ -93,57 +96,54 @@ public class Pract1 extends Application {
         Lector prueba = new Lector(myObj);
         ArrayList<Punto> puntos = prueba.LeePuntos();
 
-
         Button comparar4Est = new Button("Comparar todas las estrategias (.tsp aleatorio)");
-        Button cargarDataSet = new Button("");
+        Button comparar2Est = new Button("Comparar dos estrategias (.tsp aleatorio)");
         Button comprobarEstrategias = new Button("Comprobar todas las estrategias (dataset cargado)");
         Button estudiarEstrategia = new Button("Estudiar una estrategia (dataset cargado)");
         Button btnSalir = new Button("Salir");
 
         // Acciones al hacer clic
         comparar4Est.setOnAction(e -> comparar4(stage));
-        cargarDataSet.setOnAction(e -> comparar4(stage));
+        comparar2Est.setOnAction(e -> compararDos(stage));
         comprobarEstrategias.setOnAction(e -> compararEstrategias(stage, puntos));
         estudiarEstrategia.setOnAction(e -> stage.setScene(estudiarEstrategia(stage, puntos)));
 
         btnSalir.setOnAction(e -> stage.close());
 
         // Organizar botones en un layout vertical
-        VBox menu = new VBox(15, comparar4Est, cargarDataSet, comprobarEstrategias, estudiarEstrategia, btnSalir);
+        VBox menu = new VBox(15, comparar4Est, comparar2Est, comprobarEstrategias, estudiarEstrategia, btnSalir);
         menu.setAlignment(Pos.CENTER);
 
         return new Scene(menu, 1200, 800);
     }
 
     public void comparar4(Stage stage) {
-        int[] Tallas = { 1000, 2000, 3000, 4000, 5000};
+        int[] Tallas = { 1000, 2000, 3000, 4000, 5000 };
         Solucion ResultadosExhaustivo[] = new Solucion[Tallas.length];
-        Solucion ResultadosExhaustivoPoda[]  = new Solucion[Tallas.length];
+        Solucion ResultadosExhaustivoPoda[] = new Solucion[Tallas.length];
         Solucion ResultadosDyV[] = new Solucion[Tallas.length];
-        Solucion ResultadosDyVMejorado[] = new Solucion[Tallas.length]; 
+        Solucion ResultadosDyVMejorado[] = new Solucion[Tallas.length];
 
-       
         for (int i = 0; i < Tallas.length; i++) {
-            GeneradorTSP.crearArchivoTSP(Tallas[i],false);
+            GeneradorTSP.crearArchivoTSP(Tallas[i], false);
             File myObj = new File("dataset" + Tallas[i] + ".tsp");
 
             Lector prueba = new Lector(myObj);
             ArrayList<Punto> puntosDataset = prueba.LeePuntos();
 
             ResultadosExhaustivo[i] = Algoritmos.Exhaustivo(puntosDataset);
-            ResultadosExhaustivoPoda[i]  = Algoritmos.ExhaustivoPoda(puntosDataset);
-            ResultadosDyV[i]= Algoritmos.DyV(puntosDataset);
+            ResultadosExhaustivoPoda[i] = Algoritmos.ExhaustivoPoda(puntosDataset);
+            ResultadosDyV[i] = Algoritmos.DyV(puntosDataset);
             ResultadosDyVMejorado[i] = Algoritmos.DyVMejorado(puntosDataset);
 
-            
             System.out.println(ResultadosExhaustivo[i].toString());
             System.out.println(ResultadosExhaustivoPoda[i].toString());
             System.out.println(ResultadosDyV[i].toString());
             System.out.println(ResultadosDyVMejorado[i].toString());
 
-            
         }
-        comparar4Tabla(stage, Tallas, ResultadosExhaustivo, ResultadosExhaustivoPoda, ResultadosDyV, ResultadosDyVMejorado);
+        comparar4Tabla(stage, Tallas, ResultadosExhaustivo, ResultadosExhaustivoPoda, ResultadosDyV,
+                ResultadosDyVMejorado);
     }
 
     public void crearGrafica(ArrayList<Punto> puntosDataset, ParPuntos solucion, Stage stage) {
@@ -162,7 +162,7 @@ public class Pract1 extends Application {
         Punto p1 = solucion.getP1();
         Punto p2 = solucion.getP2();
 
-        //System.out.println("SOLUCION: " + p1 + " " + p2);
+        // System.out.println("SOLUCION: " + p1 + " " + p2);
         XYChart.Series<Number, Number> linea = new XYChart.Series<>();
         linea.getData().add(new XYChart.Data<>(p1.getX(), p1.getY()));
         linea.getData().add(new XYChart.Data<>(p2.getX(), p2.getY()));
@@ -183,6 +183,139 @@ public class Pract1 extends Application {
 
     }
 
+    private void compararDos(Stage stage) {
+        Label titulo = new Label("Comparar dos estrategias");
+        titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        // Lista de estrategias
+        ObservableList<String> estrategias = FXCollections.observableArrayList(
+                "Exhaustivo",
+                "ExhaustivoPoda",
+                "Divide y Vencerás",
+                "DyV Mejorado");
+
+        // Desplegables
+        ComboBox<String> combo1 = new ComboBox<>(estrategias);
+        combo1.setPromptText("Estrategia 1");
+
+        ComboBox<String> combo2 = new ComboBox<>(estrategias);
+        combo2.setPromptText("Estrategia 2");
+
+        Button compararBtn = new Button("Comparar");
+        compararBtn.setOnAction(e -> {
+            String e1 = combo1.getValue();
+            String e2 = combo2.getValue();
+
+            if (e1 == null || e2 == null || e1.equals(e2)) {
+                Alert alerta = new Alert(Alert.AlertType.WARNING, "Selecciona dos estrategias distintas.");
+                alerta.show();
+                return;
+            }
+
+            // Aquí llamas a los métodos de comparación o resultados
+            mostrarComparacion2(stage,e1, e2);
+        });
+
+        Button volverBtn = new Button("Volver al menú");
+        volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage)));
+
+        VBox layout = new VBox(15, titulo, combo1, combo2, compararBtn, volverBtn);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+
+        stage.setScene(new Scene(layout, 1200, 800));
+    }
+
+    public void mostrarComparacion2(Stage stage, String e1, String e2) {
+        int[] Tallas = { 1000, 2000, 3000, 4000, 5000 };
+        Solucion Estrategia1[] = new Solucion[Tallas.length];
+        Solucion Estrategia2[] = new Solucion[Tallas.length];
+
+        for (int i = 0; i < Tallas.length; i++) {
+            GeneradorTSP.crearArchivoTSP(Tallas[i], false);
+            File myObj = new File("dataset" + Tallas[i] + ".tsp");
+
+            Lector prueba = new Lector(myObj);
+            ArrayList<Punto> puntosDataset = prueba.LeePuntos();
+
+            switch (e1) {
+                case "Exhaustivo":
+                    Estrategia1[i] = Algoritmos.Exhaustivo(puntosDataset);
+                    break;
+                case "ExhaustivoPoda":
+                    Estrategia1[i] = Algoritmos.ExhaustivoPoda(puntosDataset);
+                    break;
+                case "Divide y Vencerás":
+                    Estrategia1[i] = Algoritmos.DyV(puntosDataset);
+                    break;
+                case "DyV Mejorado":
+                    Estrategia1[i] = Algoritmos.DyVMejorado(puntosDataset);
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+            switch (e2) {
+                case "Exhaustivo":
+                    Estrategia2[i] = Algoritmos.Exhaustivo(puntosDataset);
+                    break;
+                case "ExhaustivoPoda":
+                    Estrategia2[i] = Algoritmos.ExhaustivoPoda(puntosDataset);
+                    break;
+                case "Divide y Vencerás":
+                    Estrategia2[i] = Algoritmos.DyV(puntosDataset);
+                    break;
+                case "DyV Mejorado":
+                    Estrategia2[i] = Algoritmos.DyVMejorado(puntosDataset);
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+
+
+        }
+
+            mostrarComparacion2(stage, e1, e2, Tallas, Estrategia1, Estrategia2);
+    }
+    private void mostrarComparacion2(Stage stage, String e1, String e2,
+                                 int[] Tallas, Solucion[] Estrategia1, Solucion[] Estrategia2) {
+
+    Label titulo = new Label("Comparativa: " + e1 + " vs " + e2);
+    titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+    TableView<Integer> tabla = new TableView<>();
+
+    TableColumn<Integer, Integer> colTalla = new TableColumn<>("Talla");
+    colTalla.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue()).asObject());
+
+    TableColumn<Integer, String> colTiempo1 = new TableColumn<>(e1 + " (ms)");
+    colTiempo1.setCellValueFactory(d -> new SimpleStringProperty(
+            String.format("%.6f", Estrategia1[indexOf(Tallas, d.getValue())].tiempo)));
+
+    TableColumn<Integer, String> colTiempo2 = new TableColumn<>(e2 + " (ms)");
+    colTiempo2.setCellValueFactory(d -> new SimpleStringProperty(
+            String.format("%.6f", Estrategia2[indexOf(Tallas, d.getValue())].tiempo)));
+
+    TableColumn<Integer, Integer> colDist1 = new TableColumn<>("Distancias " + e1);
+    colDist1.setCellValueFactory(d -> new SimpleIntegerProperty(
+            Estrategia1[indexOf(Tallas, d.getValue())].distCalculadas).asObject());
+
+    TableColumn<Integer, Integer> colDist2 = new TableColumn<>("Distancias " + e2);
+    colDist2.setCellValueFactory(d -> new SimpleIntegerProperty(
+            Estrategia2[indexOf(Tallas, d.getValue())].distCalculadas).asObject());
+
+    tabla.getColumns().addAll(colTalla, colTiempo1, colTiempo2, colDist1, colDist2);
+    tabla.getItems().addAll(Arrays.stream(Tallas).boxed().toList());
+
+    Button volverBtn = new Button("Volver al menú");
+    volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage)));
+
+    VBox layout = new VBox(15, titulo, tabla, volverBtn);
+    layout.setAlignment(Pos.CENTER);
+    layout.setPadding(new Insets(20));
+
+    stage.setScene(new Scene(layout, 950, 400));
+}
+
     private void compararEstrategias(Stage stage, ArrayList<Punto> puntos) {
         Solucion s1 = Algoritmos.Exhaustivo(puntos);
         Solucion s2 = Algoritmos.ExhaustivoPoda(puntos);
@@ -197,8 +330,7 @@ public class Pract1 extends Application {
                 Map.entry("Exhaustivo", s1),
                 Map.entry("ExhaustivoPoda", s2),
                 Map.entry("DivideVenceras", s3),
-                                                Map.entry("DyV Mejorado", s4)
-                                               );
+                Map.entry("DyV Mejorado", s4));
 
         TableView<Map.Entry<String, Solucion>> tabla = new TableView<>();
 
@@ -241,7 +373,7 @@ public class Pract1 extends Application {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(15));
 
-        stage.setScene(new Scene(layout, 950, 400));
+        stage.setScene(new Scene(layout, 1200, 800));
     }
 
     private Scene estudiarEstrategia(Stage stage, ArrayList<Punto> puntos) {
@@ -266,51 +398,52 @@ public class Pract1 extends Application {
         return new Scene(estrategias, 1200, 800);
     }
 
-    private void comparar4Tabla(Stage stage, int[] Tallas, 
-        Solucion[] exhaustivo, Solucion[] poda, Solucion[] dyv, Solucion[] dyvMejorado) {
+    private void comparar4Tabla(Stage stage, int[] Tallas,
+            Solucion[] exhaustivo, Solucion[] poda, Solucion[] dyv, Solucion[] dyvMejorado) {
 
-    Label titulo = new Label("Comparativa de Estrategias");
-    titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        Label titulo = new Label("Comparativa de Estrategias");
+        titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-    TableView<Integer> tabla = new TableView<>();
+        TableView<Integer> tabla = new TableView<>();
 
-    TableColumn<Integer, Integer> colTalla = new TableColumn<>("Talla");
-    colTalla.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue()).asObject());
+        TableColumn<Integer, Integer> colTalla = new TableColumn<>("Talla");
+        colTalla.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue()).asObject());
 
-    TableColumn<Integer, String> colEx = new TableColumn<>("Exhaustivo (ms)");
-    colEx.setCellValueFactory(d -> new SimpleStringProperty(
-            String.format("%.6f", exhaustivo[indexOf(Tallas, d.getValue())].tiempo)));
+        TableColumn<Integer, String> colEx = new TableColumn<>("Exhaustivo (ms)");
+        colEx.setCellValueFactory(d -> new SimpleStringProperty(
+                String.format("%.6f", exhaustivo[indexOf(Tallas, d.getValue())].tiempo)));
 
-    TableColumn<Integer, String> colPoda = new TableColumn<>("ExhaustivoPoda (ms)");
-    colPoda.setCellValueFactory(d -> new SimpleStringProperty(
-            String.format("%.6f", poda[indexOf(Tallas, d.getValue())].tiempo)));
+        TableColumn<Integer, String> colPoda = new TableColumn<>("ExhaustivoPoda (ms)");
+        colPoda.setCellValueFactory(d -> new SimpleStringProperty(
+                String.format("%.6f", poda[indexOf(Tallas, d.getValue())].tiempo)));
 
-    TableColumn<Integer, String> colDyV = new TableColumn<>("DivideVenceras (ms)");
-    colDyV.setCellValueFactory(d -> new SimpleStringProperty(
-            String.format("%.6f", dyv[indexOf(Tallas, d.getValue())].tiempo)));
+        TableColumn<Integer, String> colDyV = new TableColumn<>("DivideVenceras (ms)");
+        colDyV.setCellValueFactory(d -> new SimpleStringProperty(
+                String.format("%.6f", dyv[indexOf(Tallas, d.getValue())].tiempo)));
 
-    TableColumn<Integer, String> colDyVMej = new TableColumn<>("DyV Mejorado (ms)");
-    colDyVMej.setCellValueFactory(d -> new SimpleStringProperty(
-            String.format("%.6f", dyvMejorado[indexOf(Tallas, d.getValue())].tiempo)));
+        TableColumn<Integer, String> colDyVMej = new TableColumn<>("DyV Mejorado (ms)");
+        colDyVMej.setCellValueFactory(d -> new SimpleStringProperty(
+                String.format("%.6f", dyvMejorado[indexOf(Tallas, d.getValue())].tiempo)));
 
-    tabla.getColumns().addAll(colTalla, colEx, colPoda, colDyV, colDyVMej);
-    tabla.getItems().addAll(Arrays.stream(Tallas).boxed().toList());
+        tabla.getColumns().addAll(colTalla, colEx, colPoda, colDyV, colDyVMej);
+        tabla.getItems().addAll(Arrays.stream(Tallas).boxed().toList());
 
-    Button volverBtn = new Button("Volver al menú");
-    volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage)));
+        Button volverBtn = new Button("Volver al menú");
+        volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage)));
 
-    VBox layout = new VBox(15, titulo, tabla, volverBtn);
-    layout.setAlignment(Pos.CENTER);
-    layout.setPadding(new Insets(15));
+        VBox layout = new VBox(15, titulo, tabla, volverBtn);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(15));
 
-    stage.setScene(new Scene(layout, 900, 400));
-}
+        stage.setScene(new Scene(layout, 1200, 800));
+    }
 
-// Método auxiliar
-private int indexOf(int[] arr, int val) {
-    for (int i = 0; i < arr.length; i++) if (arr[i] == val) return i;
-    return -1;
-}
-
+    // Método auxiliar
+    private int indexOf(int[] arr, int val) {
+        for (int i = 0; i < arr.length; i++)
+            if (arr[i] == val)
+                return i;
+        return -1;
+    }
 
 }
