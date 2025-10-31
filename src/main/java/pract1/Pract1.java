@@ -79,19 +79,21 @@ public class Pract1 extends Application {
 
     @Override
     public void start(Stage stage) {
-        File myObj = new File("berlin52.tsp");
+        
 
-        Lector prueba = new Lector(myObj);
-        ArrayList<Punto> puntosDataset = prueba.LeePuntos();
-
-        stage.setScene(crearMenu(stage, puntosDataset));
+        stage.setScene(crearMenu(stage));
         stage.setTitle("Análisis de Algoritmos");
 
         stage.show();
     }
 
-    private Scene crearMenu(Stage stage, ArrayList<Punto> puntos) {
-        
+    private Scene crearMenu(Stage stage) {
+        File myObj = new File("berlin52.tsp");
+
+        Lector prueba = new Lector(myObj);
+        ArrayList<Punto> puntos = prueba.LeePuntos();
+
+
         Button comparar4Est = new Button("Comparar todas las estrategias (.tsp aleatorio)");
         Button cargarDataSet = new Button("");
         Button comprobarEstrategias = new Button("Comprobar todas las estrategias (dataset cargado)");
@@ -233,7 +235,7 @@ public class Pract1 extends Application {
         tabla.getItems().addAll(soluciones);
 
         Button volverBtn = new Button("Volver al menú");
-        volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage, puntos)));
+        volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage)));
 
         VBox layout = new VBox(15, new Label("Resultados de los Algoritmos"), tabla, volverBtn);
         layout.setAlignment(Pos.CENTER);
@@ -295,7 +297,7 @@ public class Pract1 extends Application {
     tabla.getItems().addAll(Arrays.stream(Tallas).boxed().toList());
 
     Button volverBtn = new Button("Volver al menú");
-    volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage, null)));
+    volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage)));
 
     VBox layout = new VBox(15, titulo, tabla, volverBtn);
     layout.setAlignment(Pos.CENTER);
