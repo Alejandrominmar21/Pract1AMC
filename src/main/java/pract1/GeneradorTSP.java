@@ -5,8 +5,24 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Random;
 
+/**
+ * Clase para generar archivos de formato TSP (Traveling Salesman Problem) con
+ * puntos aleatorios.
+ * Permite crear conjuntos de datos de prueba con diferentes distribuciones de
+ * puntos.
+ */
 public class GeneradorTSP {
 
+    /**
+     * Crea un archivo TSP con n puntos aleatorios.
+     * El archivo generado sigue el formato estándar TSP con coordenadas EUC_2D.
+     * 
+     * @param n      Número de puntos a generar
+     * @param mismax Si es true, genera puntos con una distribución específica donde
+     *               x=1 y y varía según una fórmula especial.
+     *               Si es false, genera puntos con coordenadas aleatorias más
+     *               uniformemente distribuidas.
+     */
     public static void crearArchivoTSP(int n, boolean mismax) {
         Random rand = new Random();
         DecimalFormat df = new DecimalFormat("0.0000000000");

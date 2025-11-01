@@ -5,14 +5,32 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Clase para leer archivos de formato TSP (Traveling Salesman Problem).
+ * Lee coordenadas de puntos desde un archivo con formato específico.
+ */
 public class Lector {
+    /** Archivo TSP a leer */
     File myObj;
 
-    public Lector(File obj){
-        myObj=obj;
+    /**
+     * Constructor que inicializa el lector con un archivo.
+     * 
+     * @param obj Archivo TSP a leer
+     */
+    public Lector(File obj) {
+        myObj = obj;
     }
 
-    public ArrayList<Punto> LeePuntos(){
+    /**
+     * Lee los puntos del archivo TSP y los devuelve como una lista.
+     * El archivo debe tener un formato específico con una sección
+     * "NODE_COORD_SECTION"
+     * seguida de líneas con el formato: ID X Y
+     * 
+     * @return Lista de puntos leídos del archivo
+     */
+    public ArrayList<Punto> LeePuntos() {
         ArrayList<Punto> puntos = new ArrayList<>();
         try (Scanner myReader = new Scanner(myObj)) {
             boolean numeros = false;
@@ -22,18 +40,18 @@ public class Lector {
                     numeros = true;
                     continue;
                 } else if ("EOF".equals(data)) {
-                    //System.out.println("FINAL");
+                    // System.out.println("FINAL");
                     numeros = false;
                 }
 
                 if (numeros == true) {
                     String[] partes = data.trim().split("\\s+"); // separa por espacios
-                    //int id = Integer.parseInt(partes[0]);
+                    // int id = Integer.parseInt(partes[0]);
                     double x = Double.parseDouble(partes[1]);
                     double y = Double.parseDouble(partes[2]);
-                    //System.out.println("ID: " + id + ", X: " + x + ", Y: " + y);
-                    puntos.add(new Punto(x,y));
-                   
+                    // System.out.println("ID: " + id + ", X: " + x + ", Y: " + y);
+                    puntos.add(new Punto(x, y));
+
                 }
 
             }

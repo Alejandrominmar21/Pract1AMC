@@ -32,64 +32,47 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
- *
+ * Interfaz gráfica principal para el análisis de algoritmos de búsqueda de puntos más cercanos.
+ * Esta clase implementa una aplicación JavaFX que permite:
+ * - Comparar diferentes estrategias de búsqueda
+ * - Visualizar resultados en tablas y gráficos
+ * - Analizar rendimiento con diferentes tamaños de datos
+ * - Estudiar cada estrategia individualmente
+ * 
  * @author usuario
  */
 public class Pract1 extends Application {
-    // static int eleccion = 0;
 
     /**
-     * @param args the command line arguments
+     * Punto de entrada principal de la aplicación.
+     * Inicia la interfaz gráfica JavaFX.
+     * 
+     * @param args argumentos de la línea de comandos (no utilizados)
      */
     public static void main(String[] args) {
-        /*
-         * boolean salir = false;
-         * Scanner keyboard = new Scanner(System.in);
-         * 
-         * while(!salir){
-         * System.out.println("Elige el algoritmo a probar:");
-         * System.out.println("    1.Exhaustivo");
-         * System.out.println("    2.Exhaustivo con poda");
-         * System.out.println("    3.Divide y venceras");
-         * System.out.println("    4.Divide y venceras con mejora");
-         * try {
-         * eleccion = keyboard.nextInt();
-         * } catch (Exception e) {
-         *
-         * e.printStackTrace();
-         * }
-         * 
-         * launch();
-         * 
-         * }
-         */
 
         launch();
 
-        /*
-         * ArrayList<Punto> dataset =
-         * //Algoritmos alg = new Algoritmos();
-         * 
-         * ParPuntos Solucion1 = Algoritmos.Exhaustivo(dataset);
-         * ParPuntos Solucion2 =Algoritmos.ExhaustivoPoda(dataset);
-         * ParPuntos Solucion3 =Algoritmos.DyV(dataset);
-         * 
-         * System.out.println(Solucion1);
-         * System.out.println(Solucion2);
-         * System.out.println(Solucion3);
-         */
-
     }
 
+    /**
+     * Inicializa y configura la ventana principal de la aplicación.
+     * 
+     * @param stage El escenario principal de JavaFX donde se mostrará la aplicación
+     */
     @Override
     public void start(Stage stage) {
-
         stage.setScene(crearMenu(stage));
         stage.setTitle("Análisis de Algoritmos");
-
         stage.show();
     }
 
+    /**
+     * Crea y configura el menú principal de la aplicación.
+     * 
+     * @param stage Ventana principal donde se mostrará el menú
+     * @return Scene Escena JavaFX con el menú principal
+     */
     private Scene crearMenu(Stage stage) {
         File myObj = new File("berlin52.tsp");
 
@@ -117,6 +100,12 @@ public class Pract1 extends Application {
         return new Scene(menu, 1200, 800);
     }
 
+    /**
+     * Realiza una comparación completa de las cuatro estrategias implementadas.
+     * Genera datasets de diferentes tamaños y ejecuta todas las estrategias sobre ellos.
+     * 
+     * @param stage Ventana donde se mostrarán los resultados
+     */
     public void comparar4(Stage stage) {
         int[] Tallas = { 1000, 2000, 3000, 4000, 5000 };
         Solucion ResultadosExhaustivo[] = new Solucion[Tallas.length];
@@ -146,6 +135,13 @@ public class Pract1 extends Application {
                 ResultadosDyVMejorado);
     }
 
+    /**
+     * Crea una gráfica que muestra todos los puntos y resalta el par de puntos más cercanos.
+     * 
+     * @param puntosDataset Lista de todos los puntos a mostrar
+     * @param solucion Par de puntos más cercanos a resaltar
+     * @param stage Ventana donde se mostrará la gráfica
+     */
     public void crearGrafica(ArrayList<Punto> puntosDataset, ParPuntos solucion, Stage stage) {
         NumberAxis xAxis = new NumberAxis();
         NumberAxis yAxis = new NumberAxis();
@@ -162,7 +158,6 @@ public class Pract1 extends Application {
         Punto p1 = solucion.getP1();
         Punto p2 = solucion.getP2();
 
-        // System.out.println("SOLUCION: " + p1 + " " + p2);
         XYChart.Series<Number, Number> linea = new XYChart.Series<>();
         linea.getData().add(new XYChart.Data<>(p1.getX(), p1.getY()));
         linea.getData().add(new XYChart.Data<>(p2.getX(), p2.getY()));
@@ -183,6 +178,12 @@ public class Pract1 extends Application {
 
     }
 
+    /**
+     * Permite al usuario seleccionar y comparar dos estrategias diferentes.
+     * Muestra un menú con desplegables para seleccionar las estrategias a comparar.
+     * 
+     * @param stage Ventana donde se mostrará la interfaz de comparación
+     */
     private void compararDos(Stage stage) {
         Label titulo = new Label("Comparar dos estrategias");
         titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
@@ -213,7 +214,7 @@ public class Pract1 extends Application {
             }
 
             // Aquí llamas a los métodos de comparación o resultados
-            mostrarComparacion2(stage,e1, e2);
+            mostrarComparacion2(stage, e1, e2);
         });
 
         Button volverBtn = new Button("Volver al menú");
@@ -226,6 +227,14 @@ public class Pract1 extends Application {
         stage.setScene(new Scene(layout, 1200, 800));
     }
 
+    /**
+     * Ejecuta la comparación entre dos estrategias seleccionadas.
+     * Genera datasets de diferentes tamaños y aplica ambas estrategias.
+     * 
+     * @param stage Ventana donde se mostrarán los resultados
+     * @param e1 Nombre de la primera estrategia
+     * @param e2 Nombre de la segunda estrategia
+     */
     public void mostrarComparacion2(Stage stage, String e1, String e2) {
         int[] Tallas = { 1000, 2000, 3000, 4000, 5000 };
         Solucion Estrategia1[] = new Solucion[Tallas.length];
@@ -271,51 +280,58 @@ public class Pract1 extends Application {
                     throw new AssertionError();
             }
 
-
         }
 
-            mostrarComparacion2(stage, e1, e2, Tallas, Estrategia1, Estrategia2);
+        mostrarComparacion2(stage, e1, e2, Tallas, Estrategia1, Estrategia2);
     }
+
     private void mostrarComparacion2(Stage stage, String e1, String e2,
-                                 int[] Tallas, Solucion[] Estrategia1, Solucion[] Estrategia2) {
+            int[] Tallas, Solucion[] Estrategia1, Solucion[] Estrategia2) {
 
-    Label titulo = new Label("Comparativa: " + e1 + " vs " + e2);
-    titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        Label titulo = new Label("Comparativa: " + e1 + " vs " + e2);
+        titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-    TableView<Integer> tabla = new TableView<>();
+        TableView<Integer> tabla = new TableView<>();
 
-    TableColumn<Integer, Integer> colTalla = new TableColumn<>("Talla");
-    colTalla.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue()).asObject());
+        TableColumn<Integer, Integer> colTalla = new TableColumn<>("Talla");
+        colTalla.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue()).asObject());
 
-    TableColumn<Integer, String> colTiempo1 = new TableColumn<>(e1 + " (ms)");
-    colTiempo1.setCellValueFactory(d -> new SimpleStringProperty(
-            String.format("%.6f", Estrategia1[indexOf(Tallas, d.getValue())].tiempo)));
+        TableColumn<Integer, String> colTiempo1 = new TableColumn<>(e1 + " (ms)");
+        colTiempo1.setCellValueFactory(d -> new SimpleStringProperty(
+                String.format("%.6f", Estrategia1[indexOf(Tallas, d.getValue())].tiempo)));
 
-    TableColumn<Integer, String> colTiempo2 = new TableColumn<>(e2 + " (ms)");
-    colTiempo2.setCellValueFactory(d -> new SimpleStringProperty(
-            String.format("%.6f", Estrategia2[indexOf(Tallas, d.getValue())].tiempo)));
+        TableColumn<Integer, String> colTiempo2 = new TableColumn<>(e2 + " (ms)");
+        colTiempo2.setCellValueFactory(d -> new SimpleStringProperty(
+                String.format("%.6f", Estrategia2[indexOf(Tallas, d.getValue())].tiempo)));
 
-    TableColumn<Integer, Integer> colDist1 = new TableColumn<>("Distancias " + e1);
-    colDist1.setCellValueFactory(d -> new SimpleIntegerProperty(
-            Estrategia1[indexOf(Tallas, d.getValue())].distCalculadas).asObject());
+        TableColumn<Integer, Integer> colDist1 = new TableColumn<>("Distancias " + e1);
+        colDist1.setCellValueFactory(d -> new SimpleIntegerProperty(
+                Estrategia1[indexOf(Tallas, d.getValue())].distCalculadas).asObject());
 
-    TableColumn<Integer, Integer> colDist2 = new TableColumn<>("Distancias " + e2);
-    colDist2.setCellValueFactory(d -> new SimpleIntegerProperty(
-            Estrategia2[indexOf(Tallas, d.getValue())].distCalculadas).asObject());
+        TableColumn<Integer, Integer> colDist2 = new TableColumn<>("Distancias " + e2);
+        colDist2.setCellValueFactory(d -> new SimpleIntegerProperty(
+                Estrategia2[indexOf(Tallas, d.getValue())].distCalculadas).asObject());
 
-    tabla.getColumns().addAll(colTalla, colTiempo1, colTiempo2, colDist1, colDist2);
-    tabla.getItems().addAll(Arrays.stream(Tallas).boxed().toList());
+        tabla.getColumns().addAll(colTalla, colTiempo1, colTiempo2, colDist1, colDist2);
+        tabla.getItems().addAll(Arrays.stream(Tallas).boxed().toList());
 
-    Button volverBtn = new Button("Volver al menú");
-    volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage)));
+        Button volverBtn = new Button("Volver al menú");
+        volverBtn.setOnAction(e -> stage.setScene(crearMenu(stage)));
 
-    VBox layout = new VBox(15, titulo, tabla, volverBtn);
-    layout.setAlignment(Pos.CENTER);
-    layout.setPadding(new Insets(20));
+        VBox layout = new VBox(15, titulo, tabla, volverBtn);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
 
-    stage.setScene(new Scene(layout, 950, 400));
-}
+        stage.setScene(new Scene(layout, 950, 400));
+    }
 
+    /**
+     * Compara todas las estrategias implementadas usando un conjunto de puntos dado.
+     * Muestra una tabla con los resultados detallados de cada estrategia.
+     * 
+     * @param stage Ventana donde se mostrarán los resultados
+     * @param puntos Conjunto de puntos sobre el que se ejecutarán las estrategias
+     */
     private void compararEstrategias(Stage stage, ArrayList<Punto> puntos) {
         Solucion s1 = Algoritmos.Exhaustivo(puntos);
         Solucion s2 = Algoritmos.ExhaustivoPoda(puntos);
@@ -376,18 +392,26 @@ public class Pract1 extends Application {
         stage.setScene(new Scene(layout, 1200, 800));
     }
 
+    /**
+     * Crea una interfaz para estudiar cada estrategia individualmente.
+     * Permite seleccionar una estrategia y visualizar gráficamente sus resultados.
+     * 
+     * @param stage Ventana principal
+     * @param puntos Conjunto de puntos a analizar
+     * @return Scene Escena con los botones para seleccionar la estrategia
+     */
     private Scene estudiarEstrategia(Stage stage, ArrayList<Punto> puntos) {
         Button exhaustivo = new Button("Exhaustivo");
         Button exhaustivoPoda = new Button("Exhaustivo poda");
         Button dyv = new Button("Divide y venceras");
-        Button dyv2 = new Button("Divide y venceras ");
+        Button dyv2 = new Button("Divide y venceras mejorado");
         Button btnSalir = new Button("Salir");
 
         // Acciones al hacer clic
         exhaustivo.setOnAction(e -> crearGrafica(puntos, Algoritmos.Exhaustivo(puntos).distMin, stage));
         exhaustivoPoda.setOnAction(e -> crearGrafica(puntos, Algoritmos.ExhaustivoPoda(puntos).distMin, stage));
         dyv.setOnAction(e -> crearGrafica(puntos, Algoritmos.DyV(puntos).distMin, stage));
-        dyv2.setOnAction(e -> stage.close());
+        dyv2.setOnAction(e -> crearGrafica(puntos, Algoritmos.DyVMejorado(puntos).distMin, stage));
 
         btnSalir.setOnAction(e -> stage.close());
 
@@ -398,6 +422,16 @@ public class Pract1 extends Application {
         return new Scene(estrategias, 1200, 800);
     }
 
+    /**
+     * Muestra una tabla comparativa con los resultados de las cuatro estrategias.
+     * 
+     * @param stage Ventana donde se mostrará la tabla
+     * @param Tallas Array con los diferentes tamaños de datasets analizados
+     * @param exhaustivo Resultados del algoritmo exhaustivo
+     * @param poda Resultados del algoritmo exhaustivo con poda
+     * @param dyv Resultados del algoritmo divide y vencerás
+     * @param dyvMejorado Resultados del algoritmo divide y vencerás mejorado
+     */
     private void comparar4Tabla(Stage stage, int[] Tallas,
             Solucion[] exhaustivo, Solucion[] poda, Solucion[] dyv, Solucion[] dyvMejorado) {
 
@@ -438,7 +472,13 @@ public class Pract1 extends Application {
         stage.setScene(new Scene(layout, 1200, 800));
     }
 
-    // Método auxiliar
+    /**
+     * Método auxiliar para encontrar el índice de un valor en un array.
+     * 
+     * @param arr Array donde buscar
+     * @param val Valor a buscar
+     * @return índice del valor en el array, o -1 si no se encuentra
+     */
     private int indexOf(int[] arr, int val) {
         for (int i = 0; i < arr.length; i++)
             if (arr[i] == val)
