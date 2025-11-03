@@ -131,6 +131,7 @@ public class Algoritmos {
      *         ejecución y número de distancias calculadas
      */
     public static Solucion DyV(ArrayList<Punto> puntos) {
+        long startTime = System.nanoTime();
         if (puntos == null || puntos.size() < 2) {
             return new Solucion(null, 0, 0);
         }
@@ -139,9 +140,27 @@ public class Algoritmos {
         Arrays.sort(arr, Comparator.comparingDouble(Punto::getX));
         ArrayList<Punto> ordenadosX = new ArrayList<>(Arrays.asList(arr));
 
-        return dyvRec(ordenadosX, 0, 0);
+        Solucion sol = dyvRec(ordenadosX, 0, 0);
+        long endTime = System.nanoTime();
+
+        sol.tiempo = (float) (endTime - startTime) / 1000000; // ms 
+        return sol;
     }
 
+    /**
+     * Método recursivo del algoritmo divide y vencerás para encontrar el
+     * par de puntos más cercano.
+     * Divide el conjunto de puntos en dos mitades, calcula la solución óptima en
+     * cada mitad y combina los resultados
+     * 
+     * @param ordenadosX  Lista de puntos ordenados por coordenada X.
+     * @param Tiempo      Tiempo acumulado en milisegundos (se usa para mediciones
+     *                    internas).
+     * @param iteraciones Número de iteraciones realizadas (se usa para estadísticas
+     *                    internas).
+     * @return Un objeto {@link Solucion} con el par de puntos más cercano, el
+     *         tiempo total y el número de distancias calculadas.
+     */
     public static Solucion dyvRec(ArrayList<Punto> ordenadosX, long Tiempo, int iteraciones) {
         int n = ordenadosX.size();
         int distCalculadas = 0;
@@ -156,7 +175,7 @@ public class Algoritmos {
         ArrayList<Punto> der = new ArrayList<>(ordenadosX.subList(mid, n));
         double xm = der.get(0).getX();
 
-        long startTime = System.nanoTime();
+        //long startTime = System.nanoTime();
         Solucion solIzq = dyvRec(izq, 0, 0);
         Solucion solDer = dyvRec(der, 0, 0);
         distCalculadas = distCalculadas + solIzq.distCalculadas + solDer.distCalculadas;
@@ -192,10 +211,11 @@ public class Algoritmos {
                 }
             }
         }
-        long endTime = System.nanoTime();
+        /*long endTime = System.nanoTime();
         long executionTime = (endTime - startTime);
         executionTime = (long) (executionTime + solDer.tiempo + solIzq.tiempo);
-        return new Solucion(mejor, ((float) executionTime) / 1000000, distCalculadas);
+        return new Solucion(mejor, ((float) executionTime) / 1000000, distCalculadas);*/
+        return new Solucion(mejor, 0, distCalculadas);
     }
 
     /**
@@ -210,6 +230,7 @@ public class Algoritmos {
      */
 
     public static Solucion DyVMejorado(ArrayList<Punto> puntos) {
+        long startTime = System.nanoTime();
         if (puntos == null || puntos.size() < 2) {
             return new Solucion(null, 0, 0);
         }
@@ -217,8 +238,14 @@ public class Algoritmos {
         Punto[] arr = puntos.toArray(new Punto[0]);
         Arrays.sort(arr, Comparator.comparingDouble(Punto::getX));
         ArrayList<Punto> ordenadosX = new ArrayList<>(Arrays.asList(arr));
+        
+        Solucion sol = dyvRecMejorado(ordenadosX, 0, 0);
+        long endTime = System.nanoTime();
 
-        return dyvRecMejorado(ordenadosX, 0, 0);
+        sol.tiempo = (float) (endTime - startTime) / 1000000; // ms 
+        return sol;
+
+        //return dyvRecMejorado(ordenadosX, 0, 0);
     }
 
     /**
@@ -247,7 +274,7 @@ public class Algoritmos {
         ArrayList<Punto> der = new ArrayList<>(ordenadosX.subList(mid, n));
         double xm = der.get(0).getX();
 
-        long startTime = System.nanoTime();
+        //long startTime = System.nanoTime();
         Solucion solIzq = dyvRecMejorado(izq, 0, 0);
         Solucion solDer = dyvRecMejorado(der, 0, 0);
 
@@ -280,11 +307,11 @@ public class Algoritmos {
             }
         }
 
-        long endTime = System.nanoTime();
+        /*long endTime = System.nanoTime();
         long executionTime = endTime - startTime + (long) (solIzq.tiempo * 1000000) + (long) (solDer.tiempo * 1000000);
 
-        return new Solucion(mejor, ((float) executionTime) / 1000000, distCalculadas);
-
+        return new Solucion(mejor, ((float) executionTime) / 1000000, distCalculadas);*/
+        return new Solucion(mejor, 0, distCalculadas);
     }
 
 }
