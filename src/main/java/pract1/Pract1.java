@@ -80,21 +80,25 @@ public class Pract1 extends Application {
         ArrayList<Punto> puntos = prueba.LeePuntos();
 
         Button comparar4Est = new Button("Comparar todas las estrategias (.tsp aleatorio)");
+        Button comparar4EstPeor = new Button("Comparar todas las estrategias en caso peor(.tsp aleatorio)");
         Button comparar2Est = new Button("Comparar dos estrategias (.tsp aleatorio)");
+        Button comparar2EstPeor = new Button("Comparar dos estrategias en caso peor(.tsp aleatorio)");
         Button comprobarEstrategias = new Button("Comprobar todas las estrategias (dataset cargado)");
         Button estudiarEstrategia = new Button("Estudiar una estrategia (dataset cargado)");
         Button btnSalir = new Button("Salir");
 
         // Acciones al hacer clic
-        comparar4Est.setOnAction(e -> comparar4(stage));
-        comparar2Est.setOnAction(e -> compararDos(stage));
+        comparar4Est.setOnAction(e -> comparar4(stage,false));
+        comparar4EstPeor.setOnAction(e -> comparar4(stage,true));
+        comparar2Est.setOnAction(e -> compararDos(stage,false));
+        comparar2EstPeor.setOnAction(e -> compararDos(stage,true));
         comprobarEstrategias.setOnAction(e -> compararEstrategias(stage, puntos));
         estudiarEstrategia.setOnAction(e -> stage.setScene(estudiarEstrategia(stage, puntos)));
 
         btnSalir.setOnAction(e -> stage.close());
 
         // Organizar botones en un layout vertical
-        VBox menu = new VBox(15, comparar4Est, comparar2Est, comprobarEstrategias, estudiarEstrategia, btnSalir);
+        VBox menu = new VBox(15, comparar4Est,comparar4EstPeor, comparar2Est,comparar2EstPeor, comprobarEstrategias, estudiarEstrategia, btnSalir);
         menu.setAlignment(Pos.CENTER);
 
         return new Scene(menu, 1200, 800);
@@ -106,15 +110,15 @@ public class Pract1 extends Application {
      * 
      * @param stage Ventana donde se mostrarán los resultados
      */
-    public void comparar4(Stage stage) {
-        int[] Tallas = { 1000, 2000, 3000, 4000, 5000 };
+    public void comparar4(Stage stage,boolean casoPeor) {
+        int[] Tallas = { 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000 };
         Solucion ResultadosExhaustivo[] = new Solucion[Tallas.length];
         Solucion ResultadosExhaustivoPoda[] = new Solucion[Tallas.length];
         Solucion ResultadosDyV[] = new Solucion[Tallas.length];
         Solucion ResultadosDyVMejorado[] = new Solucion[Tallas.length];
 
         for (int i = 0; i < Tallas.length; i++) {
-            GeneradorTSP.crearArchivoTSP(Tallas[i], false);
+            GeneradorTSP.crearArchivoTSP(Tallas[i], casoPeor);
             File myObj = new File("dataset" + Tallas[i] + ".tsp");
 
             Lector prueba = new Lector(myObj);
@@ -184,7 +188,7 @@ public class Pract1 extends Application {
      * 
      * @param stage Ventana donde se mostrará la interfaz de comparación
      */
-    private void compararDos(Stage stage) {
+    private void compararDos(Stage stage, boolean casopeor) {
         Label titulo = new Label("Comparar dos estrategias");
         titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
@@ -214,7 +218,7 @@ public class Pract1 extends Application {
             }
 
             // Aquí llamas a los métodos de comparación o resultados
-            mostrarComparacion2(stage, e1, e2);
+            mostrarComparacion2(stage, e1, e2,casopeor);
         });
 
         Button volverBtn = new Button("Volver al menú");
@@ -226,7 +230,9 @@ public class Pract1 extends Application {
 
         stage.setScene(new Scene(layout, 1200, 800));
     }
+    
 
+    
     /**
      * Ejecuta la comparación entre dos estrategias seleccionadas.
      * Genera datasets de diferentes tamaños y aplica ambas estrategias.
@@ -235,13 +241,13 @@ public class Pract1 extends Application {
      * @param e1 Nombre de la primera estrategia
      * @param e2 Nombre de la segunda estrategia
      */
-    public void mostrarComparacion2(Stage stage, String e1, String e2) {
-        int[] Tallas = { 1000, 2000, 3000, 4000, 5000 };
+    public void mostrarComparacion2(Stage stage, String e1, String e2, boolean  casopeor) {
+        int[] Tallas = { 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000};
         Solucion Estrategia1[] = new Solucion[Tallas.length];
         Solucion Estrategia2[] = new Solucion[Tallas.length];
 
         for (int i = 0; i < Tallas.length; i++) {
-            GeneradorTSP.crearArchivoTSP(Tallas[i], false);
+            GeneradorTSP.crearArchivoTSP(Tallas[i], casopeor);
             File myObj = new File("dataset" + Tallas[i] + ".tsp");
 
             Lector prueba = new Lector(myObj);
