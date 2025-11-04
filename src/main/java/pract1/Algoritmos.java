@@ -49,6 +49,10 @@ public class Algoritmos {
         double distanciaMinima = distancia(puntos.get(0), puntos.get(1));
         ParPuntos puntosDistMin = new ParPuntos(puntos.get(0), puntos.get(1));
         int distCalculadas = 0;
+        if(puntos.size()>3){
+            GeneradorTSP.crearArchivoTspDeAlgoritmos(puntos, "Exhaustivo");
+        }  
+        
 
         for (int i = 0; i < puntos.size(); i++) {
             for (int j = i + 1; j < puntos.size(); j++) {
@@ -91,6 +95,7 @@ public class Algoritmos {
         ParPuntos puntosDistMin = new ParPuntos(puntos.get(0), puntos.get(1));
         ArrayList<Punto> aux = new ArrayList<>(puntos);
         aux.sort(Comparator.comparingDouble(Punto::getX));
+        GeneradorTSP.crearArchivoTspDeAlgoritmos(aux, "ExhaustivoPoda");
 
         double minDist = distancia(aux.get(0), aux.get(1));
         // Punto a= aux.get(0), b= aux.get(1);
@@ -139,6 +144,7 @@ public class Algoritmos {
         Punto[] arr = puntos.toArray(new Punto[0]);
         Arrays.sort(arr, Comparator.comparingDouble(Punto::getX));
         ArrayList<Punto> ordenadosX = new ArrayList<>(Arrays.asList(arr));
+        GeneradorTSP.crearArchivoTspDeAlgoritmos(ordenadosX, "DyV");
 
         Solucion sol = dyvRec(ordenadosX, 0, 0);
         long endTime = System.nanoTime();
@@ -238,6 +244,7 @@ public class Algoritmos {
         Punto[] arr = puntos.toArray(new Punto[0]);
         Arrays.sort(arr, Comparator.comparingDouble(Punto::getX));
         ArrayList<Punto> ordenadosX = new ArrayList<>(Arrays.asList(arr));
+        GeneradorTSP.crearArchivoTspDeAlgoritmos(ordenadosX, "DyVMejorado");
         
         Solucion sol = dyvRecMejorado(ordenadosX, 0, 0);
         long endTime = System.nanoTime();

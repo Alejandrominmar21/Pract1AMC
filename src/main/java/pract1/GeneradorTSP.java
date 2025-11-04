@@ -3,6 +3,7 @@ package pract1;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -53,6 +54,38 @@ public class GeneradorTSP {
                 }
 
                 writer.write((i + 1) + " " + df.format(x) + " " + df.format(y) + "\n");
+            }
+
+            writer.write("EOF\n");
+            System.out.println("Archivo generado correctamente: " + nombreArchivo);
+        } catch (IOException e) {
+            System.err.println("Error al escribir el archivo: " + e.getMessage());
+        }
+    }
+    /*
+     * 
+     * Crea un archivo TSP a partir de una lista de puntos dada.
+     * El archivo generado sigue el formato estándar TSP con coordenadas EUC_2D.
+     * @param puntos   Lista de puntos a incluir en el archivo TSP
+     * @param Algoritmo Nombre del algoritmo utilizado, que se incluye en el nombre
+     *                  del archivo  
+     * 
+     */
+    public static void crearArchivoTspDeAlgoritmos(ArrayList<Punto> puntos, String Algoritmo) {
+        DecimalFormat df = new DecimalFormat("0.0000000000");
+        String nombreArchivo = "dataset" + Algoritmo + ".tsp";
+        int n = puntos.size();
+
+        try (FileWriter writer = new FileWriter(nombreArchivo)) {
+            writer.write("NAME: " + nombreArchivo + "\n");
+            writer.write("TYPE: TSP\n");
+            writer.write("COMMENT: " + n + " \n");
+            writer.write("DIMENSION: " + n + "\n");
+            writer.write("EDGE_WEIGHT_TYPE: EUC_2D\n");
+            writer.write("NODE_COORD_SECTION\n");
+
+            for (int i = 0; i < n; i++) {
+                writer.write((i + 1) + " " + df.format(puntos.get(i).getX()) + " " + df.format(puntos.get(i).getY()) + "\n");
             }
 
             writer.write("EOF\n");
